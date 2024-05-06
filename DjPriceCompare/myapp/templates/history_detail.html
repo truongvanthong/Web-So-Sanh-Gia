@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+  .col-half-offset{
+      margin-left:4.166666667%
+  }
+
+  .card {
+    {% comment %} margin-top: 20px; {% endcomment %}
+    position: relative;
+    max-heigth: 410px;
+    border: 1px solid #ff6e4e;
+    box-shadow: 0 0 10px 3px #ff6e4e;
+  }
+  {% comment %} .card:first-of-type {
+    margin-right: 1em;
+  } {% endcomment %}
+  img {
+    width: 100%;
+    max-width: 300px;
+    padding: 5px;
+  }
+  
+  /* card with triangle */
+  .triangle-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }   
+  .triangle {
+    float: right;
+    position: relative;
+    border-style: solid;
+    border-width: 0 105px 105px 0;
+    border-color: transparent #f5431a transparent transparent;
+    text-align: center;
+  }    
+  .triangle-text {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: -105px;
+    text-transform: uppercase;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+  }
+  
+  /* card with ribbon */
+  .ribbon {
+    position: absolute;
+    right: 0; top: 0px;
+    z-index: 1;
+    overflow: hidden;
+    width: 100px; 
+    height: 100px;
+    text-align: right;
+  }
+  
+  /* card with ribbon */
+  .ribbon span {
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 25px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    width: 115px;
+    display: block;
+    background: green;
+    color:white;
+    box-shadow: 0 0 10px 3px #ff6e4e;
+    position: absolute;
+    top: 20px; right: -25px;
+  }
+</style>
+
+<section class="section-services section-t8">
+    <div class="container">
+    <h3>History Detail</h3><hr>
+    {% if request.user.is_staff %}
+    <div class="form p-4" style="border:1px solid black;border-radius:6px">
+        <table width="100%">
+            <tr>
+                <th>Username</th>
+                <td>{{user.user.first_name}}</td>
+                <th></th>
+                <td><img src="{{user.image.url}}" class="img-thumbnail" style="width:100px"/></td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{user.user.first_name}} {{user.user.last_name}}</td>
+            </tr>
+            <tr>
+                <th>Mobile</th>
+                <td>{{user.mobile}} </td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{user.address}} </td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+        
+    <div class="form">
+        <section class="section-property">
+            <div class="container">
+            <div id="property-carousel" class="swiper">
+                <div class="row">
+    
+                
+
+                {% for i in product %}
+
+                <div class="col-md-2 {% if forloop.counter > 1 %}col-half-offset{% endif %}">
+                    <img src="{{i.logo}}" style="width:100%;height:40px;"/>
+                    <div class="card-box-a box">
+                    <div class="img-box-a {% if forloop.counter == 1 %} card {% endif %}">
+                        {% if forloop.counter == 1 %}
+                        <div class="ribbon">
+                            <span>lowest!</span>
+                        </div>
+                        {% endif %}
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal-{{forloop.counter}}" style="width:100%">
+                            <img src="{{i.image}}" alt="" class="img-thumbnail" style="width:100%;height:180px;">
+                        </button>
+                    </div>
+                    </div>
+                    <div class="card">
+                        <div class="content">
+                        <div class="card-header" style="height:180px">
+                            <h6 class="card-title">
+                            <a href="">
+                                {{i.name}}
+                            </a>
+                            </h6>
+                            <div class="price-box mb-3">
+                                <span class="price" >Price | {{i.price}}</span>
+                            </div>
+                            <a href="{{i.link}}" target="_blank">
+                            <button class="price-box btn btn-primary">Book Now</button>
+                            </a>
+                            
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+            </div>
+
+            {% for i in product %}
+            <!-- Button trigger modal -->
+            {% comment %} <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal-{{forloop.counter}}">
+              launch
+            </button> {% endcomment %}
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <img src="{{i.image}}" alt="" class="img-thumbnail" style="width:100%">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            <div class="propery-carousel-pagination carousel-pagination"></div>
+    
+            </div>
+        </section>
+    </div>
+</div>
+{% include 'footer.html' %}
+{% endblock  %} 

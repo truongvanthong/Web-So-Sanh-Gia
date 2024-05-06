@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+
+
+<main id="main">
+
+  <!-- ======= Intro Single ======= -->
+  <section class="intro-single">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 col-lg-8">
+          <div class="title-single-box">
+            <h1 class="title-single">Tạo dựng website so sánh giá cả</h1>
+          </div>
+        </div>
+        <div class="col-md-12 col-lg-4">
+          <nav aria-label="breadcrumb" class="breadcrumb-box d-flex justify-content-lg-end">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="#">Home</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                About
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section><!-- End Intro Single-->
+
+  <!-- ======= About Section ======= -->
+  <section class="section-about">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12 position-relative">
+          <div class="about-img-box">
+            <img src="{% static 'assets/img/slide-aboutt-1.jpg' %}" alt="" class="img-fluid">
+          </div>
+          <div class="sinse-box">
+            <h3 class="sinse-title">So Sánh Giá
+              <span></span>
+              <br>2024
+            </h3>
+          </div>
+        </div>
+        <div class="col-md-12 section-t8 position-relative">
+          <div class="row">
+            <div class="col-md-6 col-lg-5">
+              <img src="{% static 'assets/img/aboutt-2.jpg' %}" alt="" class="img-fluid">
+            </div>
+            <div class="col-lg-2  d-none d-lg-block position-relative">
+              <div class="title-vertical d-flex justify-content-start">
+                <span>PriceComparison</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-5 section-md-t3">
+              <div class="title-box-d">
+                <h3 class="title-d">Tổng quan về
+                  <span class="color-d">So Sánh</span> giá
+                </h3>
+              </div>
+              <p class="color-text-a">
+                Web so sánh giá là một công cụ trực tuyến cho phép người dùng so sánh giá cả của cùng một sản phẩm được bán trên nhiều nhà bán lẻ khác nhau. 
+                Mục tiêu của các trang web này là giúp người tiêu dùng tìm được nơi bán sản phẩm với giá tốt nhất, tiết kiệm thời gian và tiền bạc.
+              </p>
+              <p class="color-text-a">
+                Với sự phát triển của công nghệ thông tin, việc so sánh giá cả trở nên dễ dàng hơn bao giờ hết.
+                Chúng tôi sử dụng công nghệ web scraping để lấy dữ liệu từ các trang web bán hàng lớn như <span style="font-style: italic;">Amazon, Điện máy xanh, ... </span>và hiển thị dữ liệu đó trên trang web của chúng tôi.
+                Để giúp người dùng tiết kiệm thời gian và tiền bạc khi mua sắm.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =======Team Section ======= -->
+  <section class="section-agents section-t8">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="title-wrap d-flex justify-content-between">
+            <div class="title-box">
+              <h2 class="title-a">Meet Our Team</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card-box-d">
+            <div class="card-img-d">
+              <img src="{% static 'assets/img/team2.png' %}" style="width:400px;height:400px" alt="" class="img-d img-fluid">
+            </div>
+            <div class="card-overlay card-overlay-hover">
+              <div class="card-header-d">
+                <div class="card-title-d align-self-center">
+                  <h3 class="title-d">
+                    <a href="https://github.com/truongvanthong" class="link-two">Trương Văn Thông</a>
+                  </h3>
+                </div>
+              </div>
+              <div class="card-body-d">
+                <div class="info-agents color-a">
+                  <p>
+                    <strong>Phone: </strong> 035 425 7974
+                  </p>
+                  <p>
+                    <strong>Email: </strong> truongvantthong@gmail.com
+                  </p>
+                </div>
+              </div>
+              <div class="card-footer-d">
+                <div class="socials-footer d-flex justify-content-center">
+                  <ul class="list-inline">
+                    <li class="list-inline-item">
+                      <a href="https://www.facebook.com/vianhlagio2307" class="link-one">
+                        <i class="bi bi-facebook" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="https://www.instagram.com/vianhlagio2307/" class="link-one">
+                        <i class="bi bi-instagram" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="#" class="link-one">
+                        <i class="bi bi-linkedin" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-box-d">
+            <div class="card-img-d">
+              <img src="{% static 'assets/img/team3.png' %}" alt="" style="width:400px;height:400px" class="img-d img-fluid">
+            </div>
+            <div class="card-overlay card-overlay-hover">
+              <div class="card-header-d">
+                <div class="card-title-d align-self-center">
+                  <h3 class="title-d">
+                    <a href="https://github.com/nguyenncai" class="link-two">Nguyễn Chí Nguyện</a>
+                  </h3>
+                </div>
+              </div>
+              <div class="card-body-d">
+                <div class="info-agents color-a">
+                  <p>
+                    <strong>Phone: </strong> 094 783 82 94
+                  </p>
+                  <p>
+                    <strong>Email: </strong> nguyenncds@gmail.com
+                  </p>
+                </div>
+              </div>
+              <div class="card-footer-d">
+                <div class="socials-footer d-flex justify-content-center">
+                  <ul class="list-inline">
+                    <li class="list-inline-item">
+                      <a href="https://www.facebook.com/chinguyen.nguyen.169" class="link-one">
+                        <i class="bi bi-facebook" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="#" class="link-one">
+                        <i class="bi bi-instagram" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <!-- <li class="list-inline-item">
+                      <a href="#" class="link-one">
+                        <i class="bi bi-linkedin" aria-hidden="true"></i>
+                      </a>
+                    </li> -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="col-md-4">
+          <div class="card-box-d">
+            <div class="card-img-d">
+              <img src="{% static 'assets/img/team3.png' %}" alt="" style="width:400px;height:400px" class="img-d img-fluid">
+            </div>
+            <div class="card-overlay card-overlay-hover">
+              <div class="card-header-d">
+                <div class="card-title-d align-self-center">
+                  <h3 class="title-d">
+                    <a href="agent-single.html" class="link-two">Emma Toledo
+                      <br> Cascada</a>
+                  </h3>
+                </div>
+              </div>
+              <div class="card-body-d">
+                <p class="content-d color-text-a">
+                  Sed porttitor lectus nibh, Cras ultricies ligula sed magna dictum porta two.
+                </p>
+                <div class="info-agents color-a">
+                  <p>
+                    <strong>Phone: </strong> +54 356 945234
+                  </p>
+                  <p>
+                    <strong>Email: </strong> agents@example.com
+                  </p>
+                </div>
+              </div>
+              <div class="card-footer-d">
+                <div class="socials-footer d-flex justify-content-center">
+                  <ul class="list-inline">
+                    <li class="list-inline-item">
+                      <a href="#" class="link-one">
+                        <i class="bi bi-facebook" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="#" class="link-one">
+                        <i class="bi bi-twitter" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="#" class="link-one">
+                        <i class="bi bi-instagram" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="#" class="link-one">
+                        <i class="bi bi-linkedin" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="#" class="link-one">
+                        <i class="bi bi-dribbble" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </section><!-- End About Section-->
+
+</main><!-- End #main -->
+{% include 'footer.html' %}
+{% endblock  %}  

@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+  .col-half-offset{
+      margin-left:4.166666667%
+  }
+
+  .card {
+    {% comment %} margin-top: 20px; {% endcomment %}
+    position: relative;
+    max-heigth: 410px;
+    border: 1px solid #ff6e4e;
+    box-shadow: 0 0 10px 3px #ff6e4e;
+  }
+  {% comment %} .card:first-of-type {
+    margin-right: 1em;
+  } {% endcomment %}
+  img {
+    width: 100%;
+    max-width: 300px;
+    padding: 5px;
+  }
+  
+  /* card with triangle */
+  .triangle-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }   
+  .triangle {
+    float: right;
+    position: relative;
+    border-style: solid;
+    border-width: 0 105px 105px 0;
+    border-color: transparent #f5431a transparent transparent;
+    text-align: center;
+  }    
+  .triangle-text {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: -105px;
+    text-transform: uppercase;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+  }
+  
+  /* card with ribbon */
+  .ribbon {
+    position: absolute;
+    right: 0; top: 0px;
+    z-index: 1;
+    overflow: hidden;
+    width: 100px; 
+    height: 100px;
+    text-align: right;
+  }
+  
+  /* card with ribbon */
+  .ribbon span {
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 25px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    width: 115px;
+    display: block;
+    background: green;
+    color:white;
+    box-shadow: 0 0 10px 3px #ff6e4e;
+    position: absolute;
+    top: 20px; right: -25px;
+  }
+</style>
+
+<section class="section-services section-t8">
+    <div class="container">
+    <h3>Search Product</h3><hr>
+        <div class="form">
+            <form class="form-a" action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                <div class="col-md-10 mb-2">
+                    <div class="form-group">
+                    <label class="pb-2" for="Type">Search(with name)</label>
+                    <input type="text" class="form-control form-control-a" placeholder="Search Product" value="{{request.POST.search}}" name="search">
+                    </div>
+                </div>
+                <div class="col-md-2 mt-4">
+                    <button type="submit" class="btn btn-primary">search</button>
+                </div>
+                </div>
+            </form>
+        </div>
+        <h6 class="mt-4">Search Product with "({{request.POST.search}})"</h6><hr>
+    <section class="section-property">
+        <div class="container">
+          <div id="property-carousel" class="swiper">
+            <div class="row">
+
+              {% for i in data %}
+
+              <div class="col-md-2 {% if forloop.counter > 1 %}col-half-offset{% endif %}">
+                <img src="{{i.logo}}" style="width:100%;height:40px;"/>
+                <div class="card-box-a box">
+                  <div class="img-box-a {% if forloop.counter == 1 %} card {% endif %}">
+                    {% if forloop.counter == 1 %}
+                      <div class="ribbon">
+                        <span>lowest!</span>
+                      </div>
+                    {% endif %}
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal-{{forloop.counter}}" style="width:100%">
+                      <img src="{{i.image}}" alt="" class="img-thumbnail" style="width:100%;height:180px;">
+                    </button>
+                  </div>
+                </div>
+                <div class="card">
+                    <div class="content">
+                      <div class="card-header" style="height:180px">
+                        <h6 class="card-title">
+                          <a href="">
+                            {{i.name}}
+                          </a>
+                        </h6>
+                        <div class="price-box mb-3">
+                            <span class="price" >Price | {{i.price}}</span>
+                        </div>
+                        <a href="{{i.link}}" target="_blank">
+                          <button class="price-box btn btn-primary">Book Now</button>
+                        </a>
+                        
+                        
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              {% endfor %}
+
+              
+
+
+              
+            </div>
+          </div>
+          {% for i in data %}
+
+              <!-- Modal -->
+              <div class="modal fade" id="exampleModal-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">{{i.name}}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="{{i.image}}" alt="" class="img-thumbnail" style="width:100%">
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+          <div class="propery-carousel-pagination carousel-pagination"></div>
+  
+        </div>
+      </section><!-- End Latest Properties Section -->
+        </div>
+</div>
+
+<script>
+  // Get the modal
+  var modal = document.getElementById("myModal");
+  
+  // Get the button that opens the modal
+  var btn = document.getElementById("myBtn");
+  
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+  
+  // When the user clicks the button, open the modal 
+  btn.onclick = function() {
+    modal.style.display = "block";
+  }
+  
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+  
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+  </script>
+{% include 'footer.html' %}
+{% endblock  %} 

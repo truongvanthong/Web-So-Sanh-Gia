@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+  <!-- ======= Intro Section ======= -->
+  <div class="intro intro-carousel swiper position-relative">
+
+    <div class="swiper-wrapper">
+
+      <div class="swiper-slide carousel-item-a intro-item bg-image" style="background-image: url({% static 'assets/img/slider-1.gif' %});background-size: 100% 720px;">
+        <div class="overlay overlay-a"></div>
+        <div class="intro-content display-table">
+          <div class="table-cell">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="intro-body">
+                    <h1 style="color:yellow">Web Scrapping
+                      <hr> From 5 Website
+                    </p>
+                    <h1 class="intro-title mb-4 ">
+                      
+                    </h1>
+                    <p class="intro-subtitle intro-price">
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide carousel-item-a intro-item bg-image" style="background-image: url({% static 'assets/img/slider-2.gif' %})">
+        <div class="overlay overlay-a"></div>
+        <div class="intro-content display-table">
+          <div class="table-cell">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="intro-body">
+                    <h1 style="color:yellow">Price Comprison<hr>
+                      From 5 Website
+                    </h1>
+                    <h1 class="intro-title mb-4">
+                      
+                    </h1>
+                    <p class="intro-subtitle intro-price">
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide carousel-item-a intro-item bg-image" style="background-image: url({% static 'assets/img/slider-3.gif' %});">
+        <div class="overlay overlay-a"></div>
+        <div class="intro-content display-table">
+          <div class="table-cell">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="intro-body">
+                    <h1 style="color:yellow">Using Seleneium<hr>
+                       BeautifulSoup
+                    </h1>
+                    <h1 class="intro-title mb-4">
+                     
+                    </h1>
+                    <p class="intro-subtitle intro-price">
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="swiper-pagination"></div>
+  </div><!-- End Intro Section -->
+
+  <main id="main">
+
+    <!-- ======= Services Section ======= -->
+    <section class="section-services section-t8">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="title-wrap d-flex justify-content-between">
+              <div class="title-box">
+                <h2 class="title-a">Our Services</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card-box-c foo">
+              <div class="card-header-c d-flex">
+                <div class="card-box-ico">
+                  <span class="bi bi-cart"></span>
+                </div>
+                <div class="card-title-c align-self-center">
+                  <h2 class="title-c">Web Scraping</h2>
+                </div>
+              </div>
+              <div class="card-body-c">
+                <p class="content-c">
+                  Thu thập dữ liệu các trang web tìm và đưu ra giá trị tốt nhất.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-box-c foo">
+              <div class="card-header-c d-flex">
+                <div class="card-box-ico">
+                  <span class="bi bi-calendar4-week"></span>
+                </div>
+                <div class="card-title-c align-self-center">
+                  <h2 class="title-c">Price Comparison</h2>
+                </div>
+              </div>
+              <div class="card-body-c">
+                <p class="content-c">
+                  So sánh tất cả giá cả và cung cấp cho giá trị tốt nhất.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-box-c foo">
+              <div class="card-header-c d-flex">
+                <div class="card-box-ico">
+                  <span class="bi bi-card-checklist"></span>
+                </div>
+                <div class="card-title-c align-self-center">
+                  <h2 class="title-c">Provide Link</h2>
+                </div>
+              </div>
+              <div class="card-body-c">
+                <p class="content-c">
+                  Cung cấp liên kết tại cùng một điểm để có thể mua sắm thoải mái sau khi so sánh.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- End Services Section -->
+
+
+    <!-- ======= Agents Section ======= -->
+    <section class="section-agents section-t8">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="title-wrap d-flex justify-content-between">
+              <div class="title-box">
+                <h2 class="title-a">Our Teams</h2>
+              </div>
+              <div class="title-link">
+                <a href="#">All Teams
+                  <span class="bi bi-chevron-right"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card-box-d">
+              <div class="card-img-d">
+                <img src="{% static 'assets/img/team2.png' %}" style="width:400px;height:400px" alt="" class="img-d img-fluid">
+              </div>
+              <div class="card-overlay card-overlay-hover">
+                <div class="card-header-d">
+                  <div class="card-title-d align-self-center">
+                    <h3 class="title-d">
+                      <a href="https://github.com/truongvanthong" class="link-two">Trương Văn Thông</a>
+                    </h3>
+                  </div>
+                </div>
+                <div class="card-body-d">
+                  <div class="info-agents color-a">
+                    <p>
+                      <strong>Phone: </strong> 035 425 7974
+                    </p>
+                    <p>
+                      <strong>Email: </strong> truongvantthong@gmail.com
+                    </p>
+                  </div>
+                </div>
+                <div class="card-footer-d">
+                  <div class="socials-footer d-flex justify-content-center">
+                    <ul class="list-inline">
+                      <li class="list-inline-item">
+                        <a href="https://www.facebook.com/vianhlagio2307" class="link-one">
+                          <i class="bi bi-facebook" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="https://www.instagram.com/vianhlagio2307/" class="link-one">
+                          <i class="bi bi-instagram" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-linkedin" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-box-d">
+              <div class="card-img-d">
+                <img src="{% static 'assets/img/team3.png' %}" style="width:400px;height:400px" alt="" class="img-d img-fluid">
+              </div>
+              <div class="card-overlay card-overlay-hover">
+                <div class="card-header-d">
+                  <div class="card-title-d align-self-center">
+                    <h3 class="title-d">
+                      <a href="https://github.com/nguyenncai" class="link-two">Nguyễn Chí Nguyện</a>
+                    </h3>
+                  </div>
+                </div>
+                <div class="card-body-d">
+                  <div class="info-agents color-a">
+                    <p>
+                      <strong>Phone: </strong> 094 783 82 94
+                    </p>
+                    <p>
+                      <strong>Email: </strong> nguyenncds@gmail.com
+                    </p>
+                  </div>
+                </div>
+                <div class="card-footer-d">
+                  <div class="socials-footer d-flex justify-content-center">
+                    <ul class="list-inline">
+                      <li class="list-inline-item">
+                        <a href="https://www.facebook.com/chinguyen.nguyen.169" class="link-one">
+                          <i class="bi bi-facebook" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-instagram" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-linkedin" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- End Agents Section -->
+
+
+    <!-- ======= Testimonials Section ======= -->
+    <section class="section-testimonials section-t8 nav-arrow-a">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="title-wrap d-flex justify-content-between">
+              <div class="title-box">
+                <h2 class="title-a">Lời thì thầm</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="testimonial-carousel" class="swiper">
+          <div class="swiper-wrapper">
+
+            <div class="carousel-item-a swiper-slide">
+              <div class="testimonials-box">
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                    <div class="testimonial-img">
+                      <img src="{% static 'assets/img/team1.png' %}" style="width:300px;height:300px" alt="" class="img-fluid">
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-6">
+                    <div class="testimonial-ico">
+                      <i class="bi bi-chat-quote-fill"></i>
+                    </div>
+                    <div class="testimonials-content">
+                      <p class="testimonial-text">
+                        So sánh giá cả cực kỳ hữu ích.
+                      </p>
+                    </div>
+                    <div class="testimonial-author-box">
+                      <img src="{% static 'assets/img/team2.png' %}" alt="" class="testimonial-avatar">
+                      <h5 class="testimonial-author">Thông & Nguyện</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+            <div class="carousel-item-a swiper-slide">
+              <div class="testimonials-box">
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                    <div class="testimonial-img">
+                      <img src="{% static 'assets/img/team2.png' %}" style="width:300px;height:300px" alt="" class="img-fluid">
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-6">
+                    <div class="testimonial-ico">
+                      <i class="bi bi-chat-quote-fill"></i>
+                    </div>
+                    <div class="testimonials-content">
+                      <p class="testimonial-text">
+                        Quá tuyệt vời, giá cả rẻ nhất từng xem.
+                      </p>
+                    </div>
+                    <div class="testimonial-author-box">
+                      <img src="{% static 'assets/img/team2.png' %}" alt="" class="testimonial-avatar">
+                      <h5 class="testimonial-author">Trí - IRT</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+          </div>
+        </div>
+        <div class="testimonial-carousel-pagination carousel-pagination"></div>
+
+      </div>
+    </section><!-- End Testimonials Section -->
+
+  </main><!-- End #main -->
+{% include 'footer.html' %}
+{% endblock  %}  

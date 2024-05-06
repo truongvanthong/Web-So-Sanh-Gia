@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+
+<section class="section-services section-t8">
+    <div class="container">
+    <h3>My Profile</h3><hr>
+    <div class="form">
+      <form class="form-a" action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <div class="form-group">
+              <label class="pb-2" for="Type">First name</label>
+              <input type="text" class="form-control form-control-a" placeholder="First Name" name="first_name" value="{{request.user.first_name}}">
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group">
+              <label class="pb-2" for="Type">Last name</label>
+              <input type="text" class="form-control form-control-a" placeholder="Last Name" name="last_name" value="{{request.user.last_name}}">
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group">
+              <label class="pb-2" for="Type">Email</label>
+              <input type="email" class="form-control form-control-a" placeholder="Email" name="username" value="{{request.user.username}}" readonly>
+            </div>
+          </div>
+          {% comment %} <div class="col-md-6 mb-2">
+            <div class="form-group">
+              <label class="pb-2" for="Type">Password</label>
+              <input type="password" class="form-control form-control-a" placeholder="Password" name="password">
+            </div>
+          </div> {% endcomment %}
+          <div class="col-md-4 mb-2">
+            <div class="form-group">
+                <label class="pb-2" for="Type">Image</label>
+                <input type="file" class="form-control form-control-a" name="image">
+            </div>
+          </div>
+          <div class="col-md-2 mb-2">
+            <div class="form-group">
+                <img src="{% if request.user.register_set.all.0.image %}{{request.user.register_set.all.0.image.url}}{% endif %}" class="img-thumbnail">
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group">
+                <label class="pb-2" for="Type">Mobile</label>
+                <input type="number" class="form-control form-control-a" name="mobile" placeholder="Mobile" value="{{request.user.register_set.all.0.mobile}}">
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group">
+              <label class="pb-2" for="bedrooms">Address</label>
+              <textarea class="form-control form-control-a" name="address" placeholder="Adress in detail">{{request.user.register_set.all.0.address}}</textarea>
+            </div>
+          </div>
+          
+          <div class="col-md-12">
+            <button type="submit" class="btn btn-b">Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% include 'footer.html' %}
+{% endblock  %} 

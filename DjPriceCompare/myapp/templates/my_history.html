@@ -1,0 +1,82 @@
+{% include 'base.html' %}
+{% load static %}
+{% block body %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+ 
+<style>
+  #active {
+    border-radius: 50%;
+  }
+
+  #inactive {
+    border-radius: 50%;
+  }
+  #active:hover {
+    cursor: default !important;
+  }
+  #inactive:hover {
+    cursor: default !important;
+  }
+  img {
+    width: 60px;
+    height: 60px;
+  }
+  .table-responsive{
+    font-size:11px;
+  }
+  .material-symbols-outlined
+  {
+    font-size:14px;
+  }
+    td{ 
+    padding:0px;
+    }
+</style>
+
+<section class="section-services section-t8">
+    <div class="container">
+    <h3>My History</h3><hr>
+    
+
+    <div class="table-responsive">
+        <table id="example1" class="display nowrap" style="width: 100%">
+            <thead>
+              <tr>
+                <th>#</th>
+                {% if request.user.is_staff %}
+                <th>Email</th>
+                <th>Search By(Name)</th>
+                {% endif %}
+                <th>Product</th>
+                <th>Search Date</th>
+                <th style="text-align: center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in history %}
+              <tr>
+                <td>{{i.id}}</td>
+                {% if request.user.is_staff %}
+                <td>{{i.user.username}}</td>
+
+                <td>{{i.user.first_name}} {{i.user.last_name}}</td>
+                {% endif %}
+                <td>
+                  <a href="/history-detail/{{i.id}}/" class="btn btn-primary">View</a>
+                </td>
+                <td>{{i.created}}</td>
+                
+                <td>
+                  <a href="/delete-history/{{i.id}}/" title="Delete History" class="btn btn-danger" onclick="return confirm('Are your sure?')"><i class="fas fa-trash" aria-hidden="true"></i> Delete</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+
+  </div>
+{% include 'footer.html' %}
+{% include 'tablecdn.html' %}
+{% endblock  %} 
