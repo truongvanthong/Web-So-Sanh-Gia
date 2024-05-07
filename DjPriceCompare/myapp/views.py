@@ -114,15 +114,53 @@ def search_product(request):
     if request.method == "POST":
         re = request.POST
         name = re['search']
+        
+        # *********************Crawl data từ Chợ Tốt******************************************
+        chotot_products = chotot(name)  # Lấy danh sách sản phẩm (list of dictionaries)
+         # Xử lý dữ liệu Chợ Tốt
+        for product in chotot_products:
+            dictobj["object"].append({
+                'logo':'/static/assets/' + 'img/' + 'chotot-logo.png', 
+                'price':convert(product["price"]), 
+                'name':product["name"][:50], 
+                'link':product["link"], 
+                'image':product["image"]
+            })    
+        # *************************************************************************************
+            
+        #Sendo
+        sendo_products = sendo(name)  # Lấy danh sách sản phẩm (list of dictionaries)
+         # Xử lý dữ liệu Chợ Tốt
+        for product in sendo_products:
+            dictobj["object"].append({
+                'logo':'/static/assets/' + 'img/' + 'sendo-logo.png', 
+                'price':convert(product["price"]), 
+                'name':product["name"], 
+                'link':product["link"], 
+                'image':product["image"]
+            })    
+        #***
+        
+        # dienmaycholon
+        dienmaycholon_products = dienmaycholon(name)  # Lấy danh sách sản phẩm (list of dictionaries)
+         # Xử lý dữ liệu Chợ Tốt
+        for product in dienmaycholon_products:
+            dictobj["object"].append({
+                'logo':'/static/assets/' + 'img/' + 'dienmaycholon-logo.png', 
+                'price':convert(product["price"]), 
+                'name':product["name"], 
+                'link':product["link"], 
+                'image':product["image"]
+            })    
+        
+            
         reliance_price, reliance_name, reliance_image, reliance_link=reliance(name)
         amazon_price, amazon_name, amazon_image, amazon_link=amazon(name)
-        # tgdd_price, tgdd_name, tgdd_image, tgdd_link=tgdd(name)
-        gadgetsnow_price, gadgetsnow_name, gadgetsnow_image, gadgetsnow_link=gadgetsnow(name)
-        dienmayxanh_price, dienmayxanh_name, dienmayxanh_image, dienmayxanh_link=dienmayxanh(name)
+        # gadgetsnow_price, gadgetsnow_name, gadgetsnow_image, gadgetsnow_link=gadgetsnow(name)
+        dienmayxanh_price, dienmayxanh_name, dienmayxanh_image, dienmayxanh_link=dienmayxanh(name)        
         dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'reliance-logo.png', 'price':convert(reliance_price)*305, 'name':reliance_name, 'link':reliance_link, 'image':reliance_image})
         dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'amazon-logo.png', 'price':convert(amazon_price)*305, 'name':amazon_name, 'link':amazon_link, 'image':amazon_image})
-        # dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'tgdd-logo.png', 'price':convert(tgdd_price), 'name':tgdd_name, 'link':tgdd_link, 'image':tgdd_image})
-        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'gadgetsnow-logo.png', 'price':convert(gadgetsnow_price)*305, 'name':gadgetsnow_name, 'link':gadgetsnow_link, 'image':gadgetsnow_image})
+        # dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'gadgetsnow-logo.png', 'price':convert(gadgetsnow_price)*305, 'name':gadgetsnow_name, 'link':gadgetsnow_link, 'image':gadgetsnow_image})
         dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'dienmayxanh.png', 'price':convert(dienmayxanh_price), 'name':dienmayxanh_name, 'link':dienmayxanh_link, 'image':dienmayxanh_image})
         data = dictobj['object']
         data = sorted(data, key=itemgetter('price'))

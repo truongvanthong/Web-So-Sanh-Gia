@@ -11,6 +11,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from django.conf import settings
 import re
 
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'}
 
@@ -19,6 +29,7 @@ from fuzzywuzzy import fuzz
 # ****************************************Format**********************************************
 
 from deep_translator import GoogleTranslator
+from selenium.common.exceptions import NoSuchElementException
 
 def translator(text):
     """
@@ -201,6 +212,280 @@ def amazon(name):
         amazon_link = '0'
         amazon_image = '0'
     return amazon_price, amazon_name[0:50], amazon_image, amazon_link
+# ====================================================================================
+
+
+#********************************************Chợ tốt**********************************************************************
+
+def chotot(name):
+    try:
+        # Chuẩn bị URL
+        name2 = name.replace(" ", "+")
+        chotot_url = f'https://www.chotot.com/mua-ban?q={name2}'
+
+        # Thiết lập options cho Chrome headless
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+
+        # Khởi tạo driver
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(options=chrome_options, service=service)
+        driver.get(chotot_url)
+
+        # Tìm kiếm danh sách element sản phẩm
+        product_elements = driver.find_elements(By.CSS_SELECTOR, "div.ListAds_ListAds__rEu_9")
+
+        products = []
+        for product_element in product_elements:
+            # Lấy thông tin sản phẩm
+            try:
+                name_element = product_element.find_element(By.CSS_SELECTOR, "h3.commonStyle_adTitle__g520j")
+                price_element = product_element.find_element(By.CSS_SELECTOR, "p.AdBody_adPriceNormal___OYFU")
+                image_element = product_element.find_element(By.CSS_SELECTOR, "picture.webpimg-container img")
+
+                chotot_name = name_element.text
+                chotot_price = price_element.text.strip('đ')
+                chotot_image = image_element.get_attribute("src")
+
+                # Lưu thông tin vào dictionary
+                product = {
+                    "name": chotot_name,
+                    "price": chotot_price,
+                    "image": chotot_image,
+                    "link": chotot_url
+                }
+                products.append(product)
+            except NoSuchElementException:
+                # Bỏ qua nếu element không tồn tại
+                pass
+
+        driver.quit()  # Đóng trình duyệt
+
+        # In thông tin sản phẩm (nếu có)
+        if products:
+            for product in products:
+                print("Chợ tốt:")
+                print("Tên Sản Phẩm:", product["name"])
+                print("Giá:", product["price"])
+                print("Link Ảnh:", product["image"])
+                print("Link:", product["link"])
+                print("---------------------------------")
+        else:
+            print("chotot: No product found!")
+            print("---------------------------------")
+
+        return products
+
+    except Exception as e:
+        print(f"Lỗi: {e}")
+        return []
+# *********************************************************************************************************
+
+
+# *****************************************Sen Đỏ*****************************
+def sendo(name):
+    try:
+        # Chuẩn bị URL
+        name2 = name.replace(" ", "+")
+        sendo_url = f"https://www.sendo.vn/tim-kiem?q={name2}"
+
+        # Khởi tạo driver (headless Chrome)
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(options=chrome_options, service=service)
+        driver.get(sendo_url)
+        
+        
+        # Tìm kiếm danh sách element
+        name_elements = WebDriverWait(driver, 10).until(
+                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "span.d7ed-Vp2Ugh._0032-Zwkt7j"))
+                         )
+        # Tìm kiếm danh sách element giá sản phẩm
+        price_elements = WebDriverWait(driver, 10).until(
+                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "span._0032-GpBMYp._0032-npoTU_.d7ed-CLUDGW.d7ed-AHa8cD.d7ed-giDKVr"))
+                        )
+        # Tìm kiếm danh sách element ảnh sản phẩm
+        image_elements = WebDriverWait(driver, 10).until(
+                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.d7ed-a1ulZz img"))
+                        )
+
+        # # Kiểm tra số lượng element
+        num_elements = len(name_elements)
+        # print(num_elements)
+        if num_elements != len(price_elements) or num_elements != len(image_elements):
+            print("sendo: Số lượng element không khớp!")
+            driver.quit()
+            return []
+
+        # Lấy danh sách sản phẩm
+        products = []
+        min_price = float('inf')  # Khởi tạo giá trị min_price là vô cùng
+        cheapest_product = None
+        for i in range(num_elements):
+            # Lấy tên sản phẩm
+            sendo_name = name_elements[i].text
+
+            # Lấy giá sản phẩm
+            sendo_price = price_elements[i].text.strip('đ')
+
+            # Chuyển đổi giá thành số (xóa dấu chấm)
+            try:
+                price_num = int(sendo_price.replace('.', ''))
+            except ValueError:
+                print(f"Lỗi chuyển đổi giá: {sendo_price}")
+                continue  # Bỏ qua sản phẩm này nếu không thể chuyển đổi giá
+
+            # Lấy link ảnh sản phẩm
+            image_src = image_elements[i].get_attribute("data-src")
+            if not image_src:
+                image_src = image_elements[i].get_attribute("src")
+
+            # Lưu thông tin vào dictionary
+            product = {
+                "name": sendo_name,
+                "price": sendo_price,
+                "image": image_src,
+                "link": sendo_url
+            }
+
+            # Kiểm tra giá và cập nhật sản phẩm rẻ nhất
+            if price_num < min_price:
+                min_price = price_num
+                cheapest_product = product
+
+        # Thêm sản phẩm rẻ nhất vào danh sách (nếu có)
+        if cheapest_product:
+            products.append(cheapest_product)
+
+        driver.quit()  # Đóng trình duyệt
+
+        # In thông tin sản phẩm (nếu có)
+        if products:
+            for product in products:
+                print("Sendo:")
+                print("Tên Sản Phẩm:", product["name"])
+                print("Giá:", product["price"])
+                print("Link Ảnh:", product["image"])
+                print("Link:", product["link"])
+                print("---------------------------------")
+        else:
+            print("sendo: No product found!")
+            print("---------------------------------")
+
+        return products
+
+    except Exception as e:
+        print(f"Lỗi: {e}")
+        return []
+    
+# **************************************
+
+# *************************Điện máy chợ lớn*************************
+def dienmaycholon(name):
+    try:
+        # Chuẩn bị URL
+        name2 = name.replace(" ", "+")
+        dienmaycholon_url = f"https://dienmaycholon.vn/tu-khoa/{name2}"
+
+        # Khởi tạo driver (headless Chrome)
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(options=chrome_options, service=service)
+        driver.get(dienmaycholon_url)
+        
+        
+        # Tìm kiếm danh sách element
+        name_elements = WebDriverWait(driver, 10).until(
+                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "h3.name_pro"))
+                            )
+
+        # Tìm kiếm danh sách element giá sản phẩm
+        price_elements = WebDriverWait(driver, 10).until(
+                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.price_sale"))
+                        )
+
+        # Tìm kiếm danh sách element ảnh sản phẩm
+        image_elements = WebDriverWait(driver, 10).until(
+                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.img_pro img"))
+                        )
+
+        # # Kiểm tra số lượng element
+        num_elements = len(name_elements)
+        # print(num_elements)
+        if num_elements != len(price_elements) or num_elements != len(image_elements):
+            print("Điện máy chợ lớn: Số lượng element không khớp!")
+            driver.quit()
+            return []
+
+        # Lấy danh sách sản phẩm
+        products = []
+        min_price = float('inf')  # Khởi tạo giá trị min_price là vô cùng
+        cheapest_product = None
+        for i in range(num_elements):
+            # Lấy tên sản phẩm
+            dienmaycholon_name = name_elements[i].text
+
+            # Lấy giá sản phẩm
+            dienmaycholon_price = price_elements[i].text.strip('đ')
+
+            # Chuyển đổi giá thành số (xóa dấu chấm)
+            try:
+                price_num = int(dienmaycholon_price.replace('.', ''))
+            except ValueError:
+                print(f"Lỗi chuyển đổi giá: {dienmaycholon_price}")
+                continue  # Bỏ qua sản phẩm này nếu không thể chuyển đổi giá
+
+            # Lấy link ảnh sản phẩm
+            image_src = image_elements[i].get_attribute("src")
+            if not image_src:
+                image_src = image_elements[i].get_attribute("data-src")
+
+            # Lưu thông tin vào dictionary
+            product = {
+                "name": dienmaycholon_name,
+                "price": dienmaycholon_price,
+                "image": image_src,
+                "link": dienmaycholon_url
+            }
+
+            # Kiểm tra giá và cập nhật sản phẩm rẻ nhất
+            if price_num < min_price:
+                min_price = price_num
+                cheapest_product = product
+
+        # Thêm sản phẩm rẻ nhất vào danh sách (nếu có)
+        if cheapest_product:
+            products.append(cheapest_product)
+
+        driver.quit()  # Đóng trình duyệt
+
+        # In thông tin sản phẩm (nếu có)
+        if products:
+            for product in products:
+                print("Điện máy chợ lớn:")
+                print("Tên Sản Phẩm:", product["name"])
+                print("Giá:", product["price"])
+                print("Link Ảnh:", product["image"])
+                print("Link:", product["link"])
+                print("---------------------------------")
+        else:
+            print("Điện máy chợ lớn: No product found!")
+            print("---------------------------------")
+
+        return products
+
+    except Exception as e:
+        print(f"Lỗi: {e}")
+        return []
+    
+# ******************************************
+
+
 
 def gadgetsnow(name):
     try:
@@ -360,4 +645,6 @@ def reliance(name):
         reliance_name = '0'
         reliance_link = '0'
     return reliance_price, reliance_name[0:50], reliance_image, reliance_link
+
+
 
