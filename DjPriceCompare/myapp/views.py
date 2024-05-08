@@ -129,47 +129,95 @@ def search_product(request):
         # *************************************************************************************
             
         #Sendo
-        sendo_products = sendo(name)  # Lấy danh sách sản phẩm (list of dictionaries)
-         # Xử lý dữ liệu Chợ Tốt
-        for product in sendo_products:
-            dictobj["object"].append({
-                'logo':'/static/assets/' + 'img/' + 'sendo-logo.png', 
-                'price':convert(product["price"]), 
-                'name':product["name"], 
-                'link':product["link"], 
-                'image':product["image"]
-            })    
+        # sendo_products = sendo(name)  # Lấy danh sách sản phẩm (list of dictionaries)
+        #  # Xử lý dữ liệu Chợ Tốt
+        # for product in sendo_products:
+        #     dictobj["object"].append({
+        #         'logo':'/static/assets/' + 'img/' + 'sendo-logo.png', 
+        #         'price':convert(product["price"]), 
+        #         'name':product["name"], 
+        #         'link':product["link"], 
+        #         'image':product["image"]
+        #     })    
         #***
         
-        # dienmaycholon
-        dienmaycholon_products = dienmaycholon(name)  # Lấy danh sách sản phẩm (list of dictionaries)
-         # Xử lý dữ liệu Chợ Tốt
-        for product in dienmaycholon_products:
-            dictobj["object"].append({
-                'logo':'/static/assets/' + 'img/' + 'dienmaycholon-logo.png', 
-                'price':convert(product["price"]), 
-                'name':product["name"], 
-                'link':product["link"], 
-                'image':product["image"]
-            })    
-        
+        # # dienmaycholon
+        # dienmaycholon_products = dienmaycholon(name)  # Lấy danh sách sản phẩm (list of dictionaries)
+        #  # Xử lý dữ liệu Chợ Tốt
+        # for product in dienmaycholon_products:
+        #     dictobj["object"].append({
+        #         'logo':'/static/assets/' + 'img/' + 'dienmaycholon-logo.png', 
+        #         'price':convert(product["price"]), 
+        #         'name':product["name"], 
+        #         'link':product["link"], 
+        #         'image':product["image"]
+        #     })    
             
-        reliance_price, reliance_name, reliance_image, reliance_link=reliance(name)
-        amazon_price, amazon_name, amazon_image, amazon_link=amazon(name)
-        # gadgetsnow_price, gadgetsnow_name, gadgetsnow_image, gadgetsnow_link=gadgetsnow(name)
-        dienmayxanh_price, dienmayxanh_name, dienmayxanh_image, dienmayxanh_link=dienmayxanh(name)        
-        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'reliance-logo.png', 'price':convert(reliance_price)*305, 'name':reliance_name, 'link':reliance_link, 'image':reliance_image})
-        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'amazon-logo.png', 'price':convert(amazon_price)*305, 'name':amazon_name, 'link':amazon_link, 'image':amazon_image})
-        # dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'gadgetsnow-logo.png', 'price':convert(gadgetsnow_price)*305, 'name':gadgetsnow_name, 'link':gadgetsnow_link, 'image':gadgetsnow_image})
-        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'dienmayxanh.png', 'price':convert(dienmayxanh_price), 'name':dienmayxanh_name, 'link':dienmayxanh_link, 'image':dienmayxanh_image})
+        # dienmayxanh
+        # dienmayxanh_products = dienmayxanh(name)
+        # for product in dienmayxanh_products:
+        #     dictobj["object"].append({
+        #         'logo':'/static/assets/' + 'img/' + 'dienmayxanh-logo.png', 
+        #         'price':convert(product["price"]), 
+        #         'name':product["name"], 
+        #         'link':product["link"], 
+        #         'image':product["image"]
+        #     })
+        
+        
+        # ===================================Điện máy xanh=======================================
+        dienmayxanh_price, dienmayxanh_name, dienmayxanh_image, dienmayxanh_link=dienmayxanh(name)   
+        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'dienmayxanh-logo.png', 
+                                  'price':convert(dienmayxanh_price), 
+                                  'name':dienmayxanh_name, 
+                                  'link':dienmayxanh_link, 
+                                  'image':dienmayxanh_image})
+        # ========================================================================================
+        
+        
+        # ===================================Sendo=================================================  
+        sendo_price, sendo_name, sendo_image, sendo_link=sendo(name)
+        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'sendo-logo.png', 
+                                  'price':convert(sendo_price), 
+                                  'name':sendo_name, 
+                                  'link':sendo_link, 
+                                  'image':sendo_image})
+        # ========================================================================================
+        
+        
+        # ===================================Điện máy chợ lớn=============================================
+        dienmaycholon_price, dienmaycholon_name, dienmaycholon_image, dienmaycholon_link=dienmaycholon(name)
+        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'dienmaycholon-logo.png', 
+                                  'price':convert(dienmaycholon_price), 
+                                  'name':dienmaycholon_name, 
+                                  'link':dienmaycholon_link, 
+                                  'image':dienmaycholon_image})
+        # ========================================================================================    
+    
+        
+        # ===================================Amazon=================================================     
+        # amazon_price, amazon_name, amazon_image, amazon_link=amazon(name)
+        # dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'amazon-logo.png', 
+        #                           'price':convert(amazon_price)*305, 
+        #                           'name':amazon_name, 
+        #                           'link':amazon_link, 
+        #                           'image':amazon_image})
+        # ========================================================================================
+        
         data = dictobj['object']
         data = sorted(data, key=itemgetter('price'))
         # Chuyển đổi tiền tệ từ INR sang VND
         for i in range(len(data)):
             data[i]['price'] = format_price(data[i]['price'])
-        # print(data)                
+            
+        # Nếu giá trị nào bằng 0 thì xóa nó
+        data = [i for i in data if i['price'] != 0]
+        dictobj['object'] = data
+
+          
         history = History.objects.create(user=request.user, product=dictobj)
         # messages.success(request, "History Saved")
+        
     return render(request, "search_product.html", locals())
 
 def my_history(request):

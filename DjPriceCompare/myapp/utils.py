@@ -15,10 +15,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 headers = {
@@ -85,80 +83,120 @@ def format_price(price):
 # ****************************************Điện Máy Xanh*****************************************
 def dienmayxanh(name):
     try:
-        global dienmayxanh
-        #name=no_accent_vietnamese(name)
-        name1 = name.replace(" ", "-")
         name2 = name.replace(" ", "+")
-        dienmayxanh = f'https://www.dienmayxanh.com/tim-kiem?key={name2}'
-        dienmayxanh_link = dienmayxanh
-        res = requests.get(
-            f'https://www.dienmayxanh.com/tim-kiem?key={name2}', headers=headers)
+        dienmayxanh_url = f'https://www.dienmayxanh.com/tim-kiem?key={name2}'
+
+        res = requests.get(dienmayxanh_url, headers=headers)
         print("\nSearching in Điện Máy Xanh...")
         soup = BeautifulSoup(res.text, 'html.parser')
-        #print(soup)
+
         dienmayxanh_page = soup.select('a.main-contain')
-        #print(dienmayxanh_page)
-        dienmayxanh_page_length = int(len(dienmayxanh_page))
-        # print(dienmayxanh_page_length)
+        dienmayxanh_page_length = int(len(dienmayxanh_page))        
+        
+        matching_products = []  # List to store matching products
         for i in range(0, dienmayxanh_page_length):
-            name1 = name.upper()
-            dienmayxanh_name = soup.select(
-                'a.main-contain>h3')[i].getText().strip().upper()
+            dienmayxanh_name = soup.select('a.main-contain>h3')[i].getText().strip().upper()
+   
             similarity_score = fuzz.ratio(name.upper(), dienmayxanh_name)
-            if similarity_score > 5:
-                dienmayxanh_name = soup.select(
-                    'a.main-contain>h3')[i].getText().strip()       
+            # print(f"Similarity Score: {similarity_score}")
                 
+            if similarity_score >= 10:
+                dienmayxanh_name = soup.select('a.main-contain>h3')[i].getText().strip()
+                # print(f"Name: {dienmayxanh_name}")
+
                 dienmayxanh_images = soup.select('a.main-contain')
-                
-                # Kiểm tra xem có ảnh được trả về không
                 if dienmayxanh_images:
-                    # Nếu có ảnh, thực hiện lấy đường link ảnh
                     if dienmayxanh_images[i].find('img').get('src'):
                         dienmayxanh_image = dienmayxanh_images[i].find('img')['src']
-                    elif dienmayxanh_images[0].find_all('img', class_='lazyload'):
-                        dienmayxanh_image = dienmayxanh_images[0].find_all('img', class_='lazyload')[0]['data-src']
+                    elif dienmayxanh_images[i].find_all('img', class_='lazyload'):
+                        dienmayxanh_image = dienmayxanh_images[i].find_all('img', class_='lazyload')[0]['data-src']
+                    elif dienmayxanh_images[i].find_all('img', class_='lazyloaded'):
+                        dienmayxanh_image = dienmayxanh_images[i].find_all('img', class_='lazyloaded')[0]['data-src']  
                     else:
-                        # Nếu không có cả 'src' và 'data-src', gán một giá trị mặc định
                         dienmayxanh_image = '0'
                 else:
-                    # Nếu không có ảnh, gán một giá trị mặc định
                     dienmayxanh_image = '0'
-                                
-                dienmayxanh_price = soup.select(
-                    'a.main-contain>strong.price')[i].getText().strip().upper()
-                dienmayxanh_price=dienmayxanh_price.strip('₫')
-                print("Điện Máy Xanh:")
-                print("Tên Sản Phẩm:", dienmayxanh_name)
-                print("Giá:", dienmayxanh_price)
-                print("Link Ảnh:", dienmayxanh_image)
-                print("Link:", dienmayxanh_link)
                 
-                print("---------------------------------")
-                break
-            else:
-                i += 1
-                i = int(i)
-                if i == dienmayxanh_page_length:
-                    dienmayxanh_price = '0'
-                    print("Điện Máy Xanh : No product found!")
-                    print("-----------------------------")
-                    break
+                try:
+                    # Robust empty price check
+                    if not soup.select('a.main-contain>strong.price')[i].getText().strip() or soup.select('a.main-contain>strong.price')[i].getText().strip() == ' ':
+                        dienmayxanh_price = '0'
+                    else:
+                        dienmayxanh_price = soup.select('a.main-contain>strong.price')[i].getText().strip().upper()
+                        dienmayxanh_price = dienmayxanh_price.strip('₫')
+                        dienmayxanh_price = re.sub("[^0-9]", "", dienmayxanh_price)
+                except:
+                    continue        
 
-        return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_link
-    except:
+                product = {
+                    "name": dienmayxanh_name,
+                    "price": dienmayxanh_price,
+                    "image": dienmayxanh_image,
+                    "link": dienmayxanh_url
+                }
+
+                # Kiểm tra xem sản phẩm nào price=0 thì không lưu vào matching_products và xoá product đó
+                if product["price"] == '0':
+                    del product
+                else:
+                    matching_products.append(product)
+          
+        # Nếu không có sản phẩm nào thì trả về None
+        if not matching_products:
+            return None  
+        
+        #------------------------------------------------------------------------
+        # print("Matching Products:")
+        # for product in matching_products:
+        #     print("Tên Sản Phẩm:", product["name"])
+        #     print("Giá:", product["price"])
+        #     print("Link Ảnh:", product["image"])
+        #     print("Link:", product["link"])
+        #     print("---------------------------------")
+        
+        # # Find the cheapest product
+        # cheapest_product = min(matching_products, key=lambda p: int(p["price"].replace('.', '')))
+                
+        # if cheapest_product:
+        #     print("Tên Sản Phẩm:", cheapest_product["name"])
+        #     print("Giá:", cheapest_product["price"])
+        #     print("Link Ảnh:", cheapest_product["image"])
+        #     print("Link:", cheapest_product["link"])
+        #     print("---------------------------------") 
+        # else:
+        #     print("No matching product found.")    
+        
+        # Lưu cheapest_product vào list_product
+        # list_product = []
+        # list_product.append(cheapest_product)
+        #------------------------------------------------------------------------
+      
+        dienmayxanh_price = matching_products[0]["price"]
+        dienmayxanh_name= matching_products[0]["name"]
+        dienmayxanh_image= matching_products[0]["image"]
+        dienmayxanh_url= matching_products[0]["link"]
+        print("Điện Máy Xanh:")
+        print("Tên Sản Phẩm:", dienmayxanh_name)
+        print("Giá:", dienmayxanh_price)
+        print("Link Ảnh:", dienmayxanh_image)
+        print("Link:", dienmayxanh_url)
+        print("---------------------------------")
+    
+        return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
+
+    except Exception as e:
+        print(f"Lỗi: {e}")
         print("Điện Máy Xanh: No product found!")
         print("---------------------------------")
         dienmayxanh_price = '0'
         dienmayxanh_name = '0'
-        dienmayxanh_link = '0'
         dienmayxanh_image = '0'
-    return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_link
-
+        dienmayxanh_url = '0'
+        return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
 # ******************************************************************************************************
 
 
-# ****************************************Amazon**********************************************
+#  ****************************************Amazon**********************************************
 def amazon(name):
     try:
         global amazon
@@ -167,6 +205,7 @@ def amazon(name):
         name2 = name.replace(" ", "+")
         amazon = f'https://www.amazon.in/{name1}/s?k={name2}'
         amazon_link = amazon
+        print(amazon_link)
         res = requests.get(
             f'https://www.amazon.in/{name1}/s?k={name2}', headers=headers)
         print("\nSearching in amazon...")
@@ -177,7 +216,11 @@ def amazon(name):
             name = name.upper()
             amazon_name = soup.select(
                 '.a-color-base.a-text-normal')[i].getText().strip().upper()
-            if name in amazon_name:
+            
+            # Tính toán độ tương đồng giữa tên sản phẩm và tên sản phẩm tìm kiếm
+            similarity_score = fuzz.ratio(name, amazon_name)
+            # print(f"Similarity Score: {similarity_score}")
+            if similarity_score >= 10:
                 amazon_name = soup.select(
                     '.a-color-base.a-text-normal')[i].getText().strip()
                 amazon_images = soup.select(
@@ -283,7 +326,6 @@ def chotot(name):
 # *********************************************************************************************************
 
 
-# *****************************************Sen Đỏ*****************************
 def sendo(name):
     try:
         # Chuẩn bị URL
@@ -300,15 +342,15 @@ def sendo(name):
         
         
         # Tìm kiếm danh sách element
-        name_elements = WebDriverWait(driver, 10).until(
+        name_elements = WebDriverWait(driver, 3).until(
                         EC.presence_of_all_elements_located((By.CSS_SELECTOR, "span.d7ed-Vp2Ugh._0032-Zwkt7j"))
                          )
         # Tìm kiếm danh sách element giá sản phẩm
-        price_elements = WebDriverWait(driver, 10).until(
+        price_elements = WebDriverWait(driver, 3).until(
                         EC.presence_of_all_elements_located((By.CSS_SELECTOR, "span._0032-GpBMYp._0032-npoTU_.d7ed-CLUDGW.d7ed-AHa8cD.d7ed-giDKVr"))
                         )
         # Tìm kiếm danh sách element ảnh sản phẩm
-        image_elements = WebDriverWait(driver, 10).until(
+        image_elements = WebDriverWait(driver, 3).until(
                         EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.d7ed-a1ulZz img"))
                         )
 
@@ -322,223 +364,136 @@ def sendo(name):
 
         # Lấy danh sách sản phẩm
         products = []
-        min_price = float('inf')  # Khởi tạo giá trị min_price là vô cùng
-        cheapest_product = None
+
         for i in range(num_elements):
-            # Lấy tên sản phẩm
-            sendo_name = name_elements[i].text
+            similarity_score = fuzz.ratio(name.upper(), name_elements[i].text.upper())
+            if similarity_score >= 10:
+                # Lấy tên sản phẩm
+                sendo_name = name_elements[i].text
 
-            # Lấy giá sản phẩm
-            sendo_price = price_elements[i].text.strip('đ')
+                # Lấy giá sản phẩm
+                sendo_price = price_elements[i].text.strip('đ')
+                # '900000đ-999000 xử lý chỉ lấy giá ở sau dấu "-"
+                sendo_price = sendo_price.split("-")[-1]
+                sendo_price = sendo_price.replace(".", "")
+                                
 
-            # Chuyển đổi giá thành số (xóa dấu chấm)
-            try:
-                price_num = int(sendo_price.replace('.', ''))
-            except ValueError:
-                print(f"Lỗi chuyển đổi giá: {sendo_price}")
-                continue  # Bỏ qua sản phẩm này nếu không thể chuyển đổi giá
+                # Lấy link ảnh sản phẩm
+                image_src = image_elements[i].get_attribute("data-src")
+                if not image_src:
+                    image_src = image_elements[i].get_attribute("src")
 
-            # Lấy link ảnh sản phẩm
-            image_src = image_elements[i].get_attribute("data-src")
-            if not image_src:
-                image_src = image_elements[i].get_attribute("src")
+                # Lưu thông tin vào dictionary
+                product = {
+                    "name": sendo_name,
+                    "price": sendo_price,
+                    "image": image_src,
+                    "link": sendo_url
+                }
 
-            # Lưu thông tin vào dictionary
-            product = {
-                "name": sendo_name,
-                "price": sendo_price,
-                "image": image_src,
-                "link": sendo_url
-            }
-
-            # Kiểm tra giá và cập nhật sản phẩm rẻ nhất
-            if price_num < min_price:
-                min_price = price_num
-                cheapest_product = product
-
-        # Thêm sản phẩm rẻ nhất vào danh sách (nếu có)
-        if cheapest_product:
-            products.append(cheapest_product)
-
+                products.append(product)
+        
         driver.quit()  # Đóng trình duyệt
 
-        # In thông tin sản phẩm (nếu có)
+        # Lấy sản phẩm đầu
+        sendo_name = products[0]["name"]
+        sendo_price = products[0]["price"]  
+        sendo_image = products[0]["image"]  
+        sendo_link = products[0]["link"]
+        
         if products:
-            for product in products:
-                print("Sendo:")
-                print("Tên Sản Phẩm:", product["name"])
-                print("Giá:", product["price"])
-                print("Link Ảnh:", product["image"])
-                print("Link:", product["link"])
-                print("---------------------------------")
-        else:
+            print("Sendo:")
+            print("Tên Sản Phẩm:", sendo_name)
+            print("Giá:", sendo_price)
+            print("Link Ảnh:", sendo_image)
+            print("Link:", sendo_link)
+            print("---------------------------------")
+            return sendo_price, sendo_name[0:50], sendo_image, sendo_link           
+        else:   
             print("sendo: No product found!")
             print("---------------------------------")
-
-        return products
-
+            sendo_price = '0'   
+            sendo_name = '0'
+            sendo_link = '0'
+            sendo_image = '0'
+            return sendo_price, sendo_name, sendo_image, sendo_link
+                                         
     except Exception as e:
         print(f"Lỗi: {e}")
-        return []
+        sendo_price = '0'
+        sendo_name = '0'
+        sendo_link = '0'
+        sendo_image = '0'
+        return sendo_price, sendo_name, sendo_image, sendo_link
     
-# **************************************
+# **************************************************************************
 
 # *************************Điện máy chợ lớn*************************
 def dienmaycholon(name):
     try:
         # Chuẩn bị URL
-        name2 = name.replace(" ", "+")
+        name2 = name.replace(" ", "-")
         dienmaycholon_url = f"https://dienmaycholon.vn/tu-khoa/{name2}"
 
-        # Khởi tạo driver (headless Chrome)
+        # Khởi tạo options cho Chrome
         chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--headless")  # Chạy headless
+        chrome_options.add_argument("--disable-gpu") # Tắt GPU
+        chrome_options.add_experimental_option('useAutomationExtension', False) # Tắt thông báo Chrome Automation
+        chrome_options.add_argument('--ignore-certificate-errors') # Bỏ qua lỗi certificate
+        chrome_options.add_argument('--start-maximized') # Mở toàn màn hình
+
+        # Khởi tạo driver
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(options=chrome_options, service=service)
-        driver.get(dienmaycholon_url)
+        driver.get(dienmaycholon_url) 
+        # driver.implicitly_wait(10)  # Chờ đợi element xuất hiện 
+        print("---------------------------------")
+        print("\nSearching in Điện Máy Chợ Lớn...")
         
-        
-        # Tìm kiếm danh sách element
-        name_elements = WebDriverWait(driver, 10).until(
-                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "h3.name_pro"))
-                            )
-
-        # Tìm kiếm danh sách element giá sản phẩm
-        price_elements = WebDriverWait(driver, 10).until(
-                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.price_sale"))
-                        )
-
-        # Tìm kiếm danh sách element ảnh sản phẩm
-        image_elements = WebDriverWait(driver, 10).until(
-                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.img_pro img"))
-                        )
-
-        # # Kiểm tra số lượng element
-        num_elements = len(name_elements)
-        # print(num_elements)
-        if num_elements != len(price_elements) or num_elements != len(image_elements):
-            print("Điện máy chợ lớn: Số lượng element không khớp!")
+        # Tìm kiếm element
+        try:
+            element_name = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "h3.name_pro"))
+            )
+            element_price = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.price_sale"))
+            )
+            element_image = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "a.img_pro img"))
+            )
+        except TimeoutException:
             driver.quit()
-            return []
+            return "0", "0", "0", "0"
 
-        # Lấy danh sách sản phẩm
-        products = []
-        min_price = float('inf')  # Khởi tạo giá trị min_price là vô cùng
-        cheapest_product = None
-        for i in range(num_elements):
-            # Lấy tên sản phẩm
-            dienmaycholon_name = name_elements[i].text
-
-            # Lấy giá sản phẩm
-            dienmaycholon_price = price_elements[i].text.strip('đ')
-
-            # Chuyển đổi giá thành số (xóa dấu chấm)
-            try:
-                price_num = int(dienmaycholon_price.replace('.', ''))
-            except ValueError:
-                print(f"Lỗi chuyển đổi giá: {dienmaycholon_price}")
-                continue  # Bỏ qua sản phẩm này nếu không thể chuyển đổi giá
-
-            # Lấy link ảnh sản phẩm
-            image_src = image_elements[i].get_attribute("src")
-            if not image_src:
-                image_src = image_elements[i].get_attribute("data-src")
-
-            # Lưu thông tin vào dictionary
-            product = {
-                "name": dienmaycholon_name,
-                "price": dienmaycholon_price,
-                "image": image_src,
-                "link": dienmaycholon_url
-            }
-
-            # Kiểm tra giá và cập nhật sản phẩm rẻ nhất
-            if price_num < min_price:
-                min_price = price_num
-                cheapest_product = product
-
-        # Thêm sản phẩm rẻ nhất vào danh sách (nếu có)
-        if cheapest_product:
-            products.append(cheapest_product)
-
+        # Lấy thông tin sản phẩm
+        dienmaycholon_name = element_name.text
+        dienmaycholon_price = element_price.text.strip('đ')
+        # Rẻhơn:8490000 
+        # xử lý giá nếu có dạng "Rẻ hơn:8490000" thì chỉ lấy giá ở sau dấu ":"
+        dienmaycholon_price = dienmaycholon_price.split(":")[-1]
+                
+        dienmaycholon_image = element_image.get_attribute("src")
+        
         driver.quit()  # Đóng trình duyệt
+        print("Điện Máy Chợ Lớn:")
+        print("Tên Sản Phẩm:", dienmaycholon_name)
+        print("Giá:", dienmaycholon_price)
+        print("Link Ảnh:", dienmaycholon_image)
+        print("Link:", dienmaycholon_url)
+        print("---------------------------------")
 
-        # In thông tin sản phẩm (nếu có)
-        if products:
-            for product in products:
-                print("Điện máy chợ lớn:")
-                print("Tên Sản Phẩm:", product["name"])
-                print("Giá:", product["price"])
-                print("Link Ảnh:", product["image"])
-                print("Link:", product["link"])
-                print("---------------------------------")
-        else:
-            print("Điện máy chợ lớn: No product found!")
-            print("---------------------------------")
-
-        return products
+        return dienmaycholon_price, dienmaycholon_name[0:50], dienmaycholon_image, dienmaycholon_url
 
     except Exception as e:
         print(f"Lỗi: {e}")
-        return []
+        dienmaycholon_price = '0'
+        dienmaycholon_name = '0'
+        dienmaycholon_image = '0'
+        dienmaycholon_url = '0'
+        return dienmaycholon_price, dienmaycholon_name, dienmaycholon_image, dienmaycholon_url
     
 # ******************************************
-
-
-
-def gadgetsnow(name):
-    try:
-        global gadgetsnow
-        name = translator(name)
-        name1 = name.replace(" ", "-")
-        name2 = name.replace(" ", "+")
-        gadgetsnow = f'https://shop.gadgetsnow.com/mtkeywordsearch?SEARCH_STRING={name2}'
-        gadgetsnow_link = gadgetsnow
-        res = requests.get(
-            f'https://shop.gadgetsnow.com/mtkeywordsearch?SEARCH_STRING={name2}', headers=headers)
-        print("\nSearching in gadgetsnow...")
-        soup = BeautifulSoup(res.text, 'html.parser')
-        gadgetsnow_page = soup.select('.product-name')
-        gadgetsnow_page_length = int(len(gadgetsnow_page))
-
-        for i in range(0, gadgetsnow_page_length):
-            name = name.upper()
-            gadgetsnow_name = soup.select(
-                '.product-name')[i].getText().strip().upper()
-            if name in gadgetsnow_name:
-                gadgetsnow_name = soup.select(
-                    '.product-name')[i].getText().strip()
-                images = soup.select('.product-img-align')[i]
-                image = images.select('.lazy')[0]
-                gadgetsnow_image = image['data-original']
-                gadgetsnow_price = soup.select('.offerprice')[
-                    i].getText().strip().upper()
-                gadgetsnow_price = "".join(gadgetsnow_price)
-                gadgetsnow_price = gadgetsnow_price[1:]
-                print("GadgetSnow:")
-                print(gadgetsnow_name)
-                gadgetsnow_price = "₹"+gadgetsnow_price
-                print("---------------------------------")
-                break
-            else:
-                i += 1
-                i = int(i)
-                if i == gadgetsnow_page_length:
-                    gadgetsnow_price = '0'
-                    print("GadgetSnow : No product found!")
-                    print("-----------------------------")
-                    break
-
-        return gadgetsnow_price, gadgetsnow_name[0:50], gadgetsnow_image, gadgetsnow_link
-    except:
-        print("GadgetSnow: No product found!")
-        print("---------------------------------")
-        gadgetsnow_price = '0'
-        gadgetsnow_name = '0'
-        gadgetsnow_image = '0'
-        gadgetsnow_link = '0'
-    return gadgetsnow_price, gadgetsnow_name[0:50], gadgetsnow_image, gadgetsnow_link
 
 def croma(name):
     try:
@@ -553,9 +508,8 @@ def croma(name):
         CO.add_experimental_option('useAutomationExtension', False)
         CO.add_argument('--ignore-certificate-errors')
         CO.add_argument('--start-maximized')
-        print("Driver path", str(settings.BASE_DIR)+'\chromedriver.exe')
-        wd = webdriver.Chrome(r''+str(settings.BASE_DIR) +
-                              '\chromedriver.exe', options=CO)
+        # print("Driver path", str(settings.BASE_DIR)+'\chromedriver.exe')
+        wd = webdriver.Chrome('chromedriver.exe', options=CO)
 
         wd.get(source)
         wd.implicitly_wait(wait_imp)
@@ -588,63 +542,3 @@ def croma(name):
         croma_image = '0'
         croma_link = '0'
     return croma_price, croma_name[0:50], croma_image, croma_link
-
-def reliance(name):
-    try:
-        global reliance
-        name = translator(name)
-        name1 = name.replace(" ", "-")
-        name2 = name.replace(" ", "+")
-        reliance = f'https://www.reliancedigital.in/search?q={name2}:relevance'
-        reliance_link = reliance
-        res = requests.get(
-            f'https://www.reliancedigital.in/search?q={name2}:relevance', headers=headers)
-        print("\nSearching in reliance...")
-        soup = BeautifulSoup(res.text, 'html.parser')
-        reliance_page = soup.select('.sp__name')
-        article_block = soup.find_all('div', class_='slider-text')
-        reliance_data = article_block[0].getText().strip(
-        )[article_block[0].getText().strip().index('₹')+1:]
-        reliance_price = ""
-        for i in reliance_data:
-            if i.isnumeric() or i == ',':
-                reliance_price += i
-            else:
-                break
-        images = soup.find_all('img', class_='img-responsive')
-        reliance_image = "https://www.reliancedigital.in/" + \
-            images[0]['data-srcset']
-        reliance_page_length = int(len(reliance_page))
-        for i in range(0, reliance_page_length):
-            name = name.upper()
-            reliance_name = soup.select('.sp__name')[
-                i].getText().strip().upper()
-            if name in reliance_name:
-                reliance_name = soup.select('.sp__name')[i].getText().strip()
-                print("Reliance:", reliance_price)
-                print(reliance_name)
-                print(reliance_image)
-                print("₹"+reliance_price)
-                print("---------------------------------")
-                break
-            else:
-                i += 1
-                i = int(i)
-                if i == reliance_page_length:
-                    reliance_price = '0'
-                    print("reliance : No product found!")
-                    print("-----------------------------")
-                    break
-
-        return reliance_price, reliance_name[0:50], reliance_image, reliance_link
-    except:
-        print("Reliance: No product found!")
-        print("---------------------------------")
-        reliance_price = '0'
-        reliance_image = '0'
-        reliance_name = '0'
-        reliance_link = '0'
-    return reliance_price, reliance_name[0:50], reliance_image, reliance_link
-
-
-

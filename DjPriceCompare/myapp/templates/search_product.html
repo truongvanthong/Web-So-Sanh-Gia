@@ -73,6 +73,20 @@
     position: absolute;
     top: 20px; right: -25px;
   }
+
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 </style>
 
 <section class="section-services section-t8">
@@ -81,8 +95,8 @@
         <div class="form">
             <form class="form-a" action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="row">
-                <div class="col-md-10 mb-2">
+                <div class="row align-items-end mb-2">
+                <div class="col-md-10">
                     <div class="form-group">
                     <label class="pb-2" for="Type">Search(with name)</label>
                     <input type="text" class="form-control form-control-a" placeholder="Search Product" value="{{request.POST.search}}" name="search">
@@ -118,7 +132,8 @@
                 </div>
                 <div class="card">
                     <div class="content">
-                      <div class="card-header" style="height:200px">
+                      <div class="card-header d-flex flex-column" style="height:200px">
+                        <!-- <h6 class="card-title line-clamp-1"> -->
                         <h6 class="card-title">
                           <a href="">
                             {{i.name}}
@@ -127,7 +142,7 @@
                         <div class="price-box mb-3">
                             <span class="price" >Price | {{i.price}}</span>
                         </div>
-                        <a href="{{i.link}}" target="_blank">
+                        <a href="{{i.link}}" class="mt-auto" target="_blank">
                           <button class="price-box btn btn-primary">Book Now</button>
                         </a>
                         
