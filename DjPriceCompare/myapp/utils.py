@@ -24,7 +24,6 @@ def check_val_float(val):
     except ValueError:
         return False
 
-
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'}
 
@@ -35,6 +34,7 @@ from fuzzywuzzy import fuzz
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
+
 
 # Khởi tạo driver
 service = Service(ChromeDriverManager().install())
@@ -206,6 +206,7 @@ def dienmayxanh(name):
         dienmayxanh_url = '0'
         return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
 # ******************************************************************************************************
+
 # ****************************************Điện Máy Xanh*****************************************
 # def dienmayxanhx(name):
     try:
@@ -294,73 +295,6 @@ def dienmayxanh(name):
         dienmayxanh_url = '0'
         return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
 # ******************************************************************************************************
-
-# # *************************Điện máy xanh*************************
-# def dienmayxanh(name):
-#     try:
-#         # Chuẩn bị URL
-#         name2 = name.replace(" ", "-")
-#         dienmayxanh_url = f"https://www.dienmayxanh.com/tim-kiem?key={name2}"
-
-#         dienmayxanh_driver.get(dienmayxanh_url) 
-#         print("---------------------------------")
-#         print("\nSearching in Điện Máy Xanh...")
-#         soup = BeautifulSoup(dienmayxanh_driver.page_source, 'lxml')
-        
-#         # Tìm kiếm element
-#         element_name = soup.select("a.main-contain>h3")
-
-#         element_price = soup.select("a.main-contain>strong.price")
-        
-#         element_image = soup.select("a.main-contain > div > img")
-
-#         # Lấy thông tin sản phẩm   
-               
-#         # Giá
-#         # re.sub("[^0-9]", ""
-#         dienmayxanh_price = [re.sub("[^0-9]", "", ele.get_text().strip('₫').strip().replace(".", "")) for ele in element_price]
-#         dienmayxanh_price_float = [float(ele) for ele in dienmayxanh_price]
-#         thresh = np.quantile(dienmayxanh_price_float, q = 0.25)
-#         # remome thresh 
-#         dienmayxanh_price = [ele for ele, price_float  in zip(dienmayxanh_price, dienmayxanh_price_float) if price_float>=thresh]    
-        
-#         # Name
-#         # ' '.join(element_names[0].get_text().replace("\n", "").split())
-#         dienmayxanh_name = [' '.join(ele.get_text().replace("\n", "").split()) for ele, price_float in zip(element_name, dienmayxanh_price_float) if price_float>=thresh]
-                
-#         # Image
-#         dienmayxanh_image = [ele.attrs['data-src'] for ele, price_float in zip(element_image, dienmayxanh_price_float) if price_float>=thresh]
-#         if not dienmayxanh_image:
-#             dienmayxanh_image = [ele.attrs['src'] for ele, price_float in zip(element_image, dienmayxanh_price_float) if price_float>=thresh]
-        
-#         # Lọc giá bé nhất
-#         dienmayxanh_price_float = [ele for ele in dienmayxanh_price_float if ele>=thresh]
-#         # min(enumerate(a), key=lambda x: x[1])[0]
-#         index_min = min(enumerate(dienmayxanh_price_float), key=lambda x: x[1])[0]
-        
-#         dienmayxanh_name = dienmayxanh_name[index_min]
-#         dienmayxanh_price = dienmayxanh_price[index_min]
-#         dienmayxanh_image = dienmayxanh_image[index_min]
-        
-#         print("Điện Máy Xanh:")
-#         print("Tên Sản Phẩm:", dienmayxanh_name)
-#         print("Giá:", dienmayxanh_price)
-#         print("Link Ảnh:", dienmayxanh_image)
-#         print("Link:", dienmayxanh_url)
-#         print("---------------------------------")
-
-#         return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
-
-#     except Exception as e:
-#         print(f"Lỗi: {e}")
-#         dienmayxanh_price = '0'
-#         dienmayxanh_name = '0'
-#         dienmayxanh_image = '0'
-#         dienmayxanh_url = '0'
-#         return dienmayxanh_price, dienmayxanh_name, dienmayxanh_image, dienmayxanh_url
-    
-# # ******************************************
-
 
 #  ****************************************Amazon**********************************************
 def amazon(name):
@@ -491,6 +425,7 @@ def amazon(name):
 
 
 # *************************Chợ Tốt*************************
+# *************************Chợ Tốt*************************
 def chotot(name):
     try:
         # Chuẩn bị URL
@@ -514,6 +449,12 @@ def chotot(name):
             
         for ele in elements:
             try:
+                image_element = ele.select_one("picture.webpimg-container img")
+                if image_element is not None:
+                    image_element = image_element.get("src")
+                else:   
+                    continue
+                
                 name_element = ele.select_one("h3.commonStyle_adTitle__g520j")
                 if name_element is not None:
                     name_element = name_element.get_text()
@@ -525,24 +466,13 @@ def chotot(name):
                     price_element = price_element.get_text().strip(' đ').strip().replace(".", "")
                 else:
                     price_element = '0'
-                
-                image_element = ele.select_one("picture.webpimg-container img")
-                if image_element is not None:
-                    image_element = image_element.get("src")
-                else:   
-                    image_element = '0'
-                
-                
+ 
                 chotot_name.append(name_element)
                 chotot_price.append(price_element)
                 chotot_image.append(image_element)
             except:
                 pass
 
-        # Lấy thông tin sản phẩm   
-        # print(chotot_name)
-        # print(chotot_price)
-        # print(chotot_image)
         
         chotot_check_vald_product = [check_val_float(ele) for ele in chotot_price]
         if not any(chotot_check_vald_product):
@@ -596,6 +526,8 @@ def chotot(name):
         chotot_image = '0'
         chotot_url = '0'
         return chotot_price, chotot_name, chotot_image, chotot_url
+    
+# ******************************************
     
 # ******************************************
 
@@ -691,8 +623,6 @@ def sendo(name):
     
 # **************************************************************************
 
-
-
 # *************************Điện máy chợ lớn*************************
 def dienmaycholon(name):
     try:
@@ -706,21 +636,50 @@ def dienmaycholon(name):
         print("\nSearching in Điện Máy Chợ Lớn...")
         soup = BeautifulSoup(dienmaycholon_driver.page_source, 'lxml')
         
-        # Tìm kiếm element
-        element_name = soup.select("h3.name_pro")
-        if len(element_name) == 0:
+        elements = soup.select(".list_product_cat .product")
+        dienmaycholon_name = []
+        dienmaycholon_price = []
+        dienmaycholon_image = []
+        if len(elements) == 0:
             raise Exception("Không tìm thấy sản phẩm!")
+            
+        for ele in elements:
+            try:
+                image_element = ele.select_one("a.img_pro img")
+                if image_element is not None:
+                    image_element = (image_element.attrs['src'] or image_element.attrs['data-src'])
+                    if image_element.startswith("//"):
+                        image_element = "https:" + image_element
+                    else:
+                        image_element = "https://" + image_element   
+                
+                    if image_element.__contains__("base64"):
+                        continue
+                else:   
+                    continue
+                
+                name_element = ele.select_one("h3.name_pro")
+                if name_element is not None:
+                    name_element = ' '.join(name_element.get_text().replace("\n", "").split())
+                else:
+                    name_element = '0'
+                    
+                price_element = ele.select_one("div.price_sale")
+                if price_element is not None:
+                    price_element = price_element.get_text().strip('đ').split(":")[-1].strip().replace(".", "")
+                else:
+                    price_element = '0'
+ 
+                dienmaycholon_name.append(name_element)
+                dienmaycholon_price.append(price_element)
+                dienmaycholon_image.append(image_element)
+            except:
+                pass
         
-        element_price = soup.select("div.price_sale")
-        
-        element_image = soup.select("a.img_pro img")
-
-
+       
         # Lấy thông tin sản phẩm   
                
         # Giá
-        dienmaycholon_price = [ele.get_text().strip('đ').split(":")[-1].strip().replace(".", "") for ele in element_price]
-        # dienmaycholon_price_float = [float(ele) for ele in dienmaycholon_price if check_val_float(ele)]
         
         dienmaycholon_check_vald_product = [check_val_float(ele) for ele in dienmaycholon_price]
         if not any(dienmaycholon_check_vald_product):
@@ -728,9 +687,9 @@ def dienmaycholon(name):
     
         # Lọc ra những giá trị không hợp lệ
 
-        element_name = [ele for ele, check in zip(element_name, dienmaycholon_check_vald_product) if check]
+        dienmaycholon_name = [ele for ele, check in zip(dienmaycholon_name, dienmaycholon_check_vald_product) if check]
         dienmaycholon_price = [ele for ele, check in zip(dienmaycholon_price, dienmaycholon_check_vald_product) if check]        
-        element_image = [ele for ele, check in zip(element_image, dienmaycholon_check_vald_product) if check]
+        dienmaycholon_image = [ele for ele, check in zip(dienmaycholon_image, dienmaycholon_check_vald_product) if check]
          
         dienmaycholon_price_float = [float(ele) for ele in dienmaycholon_price]        
         thresh = np.quantile(dienmaycholon_price_float, q = 0.55)
@@ -738,12 +697,11 @@ def dienmaycholon(name):
         dienmaycholon_price = [ele for ele, price_float  in zip(dienmaycholon_price, dienmaycholon_price_float) if price_float>=thresh]    
         
         # Name
-        # ' '.join(element_names[0].get_text().replace("\n", "").split())
-        dienmaycholon_name = [' '.join(ele.get_text().replace("\n", "").split()) for ele, price_float in zip(element_name, dienmaycholon_price_float) if price_float>=thresh]
+        dienmaycholon_name = [ele for ele, price_float in zip(dienmaycholon_name, dienmaycholon_price_float) if price_float>=thresh]
                 
         # Image
         # element_image[0].attrs['src']
-        dienmaycholon_image = ["https://" + (ele.attrs['src'] or ele.attrs['data-src']) for ele, price_float in zip(element_image, dienmaycholon_price_float) if price_float>=thresh]
+        dienmaycholon_image = [ele for ele, price_float in zip(dienmaycholon_image, dienmaycholon_price_float) if price_float>=thresh]
         
         # Lọc giá bé nhất
         dienmaycholon_price_float = [ele for ele in dienmaycholon_price_float if ele>=thresh]

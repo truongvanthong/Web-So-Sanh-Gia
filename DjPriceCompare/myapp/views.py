@@ -183,7 +183,7 @@ def search_product(request):
         # =========================================================================================
 
         # ===================================Điện máy chợ lớn=============================================
-                # dienmaycholon_price, dienmaycholon_name, dienmaycholon_image, dienmaycholon_link = dienmaycholon(name)
+        # dienmaycholon_price, dienmaycholon_name, dienmaycholon_image, dienmaycholon_link = dienmaycholon(name)
         dictobj["object"].append({'logo': '/static/assets/' + 'img/' + 'dienmaycholon-logo.png',
                                   'price': convert(dienmaycholon_price),
                                   'name': dienmaycholon_name,
@@ -206,11 +206,9 @@ def search_product(request):
         # Nếu giá trị nào bằng 0 thì xóa nó
         data = [i for i in data if i['price'] != '0']
     
-        
         data = sorted(data, key=itemgetter('price'))
         check_flag = False
 
-        
         # Chuyển đổi tiền tệ từ sang VND
         for i in range(len(data)):
             if not check_flag:
@@ -231,10 +229,20 @@ def search_product(request):
 
 
 def my_history(request):
-    history = History.objects.filter(user=request.user)
+    history = History.objects.filter(user=request.user).order_by('-created')
+
+    # Check if the current user is a staff member
     if request.user.is_staff:
-        history = History.objects.filter()
+        # If the user is staff, retrieve all history objects (override previous filter)
+        history = History.objects.all()
+    
+    # Adjust timestamps to milliseconds
+    for i in history:
+        i.created = i.created.timestamp() * 1000
+        
+    # Render the template 'my_history.html' with the 'history' variable available
     return render(request, "my_history.html", locals())
+
 
 
 def all_user(request):
@@ -244,9 +252,10 @@ def all_user(request):
 # Hàm xem chi tiết lịch sử tìm kiếm
 def history_detail(request, pid):
     history = History.objects.get(id=pid)
-    product = (history.product).replace("'", '"')
-    product = json.loads(str(product))
-    product = product['object']
+    # print(history.product)
+    # product = (history.product).replace("'", '"')
+    # product = json.loads(str(product))
+    product = eval(history.product)['object']
     product = sorted(product, key=itemgetter('price'))
     try:
         user = Register.objects.get(user=history.user)

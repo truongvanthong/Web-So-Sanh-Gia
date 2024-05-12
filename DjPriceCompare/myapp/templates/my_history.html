@@ -65,7 +65,7 @@
                 <td>
                   <a href="/history-detail/{{i.id}}/" class="btn btn-primary">View</a>
                 </td>
-                <td>{{i.created}}</td>
+                <td data-date="{{i.created}}"></td>
                 
                 <td>
                   <a href="/delete-history/{{i.id}}/" title="Delete History" class="btn btn-danger" onclick="return confirm('Are your sure?')"><i class="fas fa-trash" aria-hidden="true"></i> Delete</a>
@@ -77,6 +77,35 @@
     </div>
 
   </div>
+
+  <script>
+    const dataDates = document.querySelectorAll('td[data-date]')
+
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const options = {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+};
+
+const getDateString = (dateParam) => {
+    const date = new Date(+dateParam);
+
+    return date.toLocaleString('en-GB', options);
+};
+
+    dataDates.forEach(dataDate => {
+      const date = dataDate.getAttribute('data-date')
+      dataDate.textContent = getDateString(date)
+    })
+  </script>
+
 {% include 'footer.html' %}
 {% include 'tablecdn.html' %}
 {% endblock  %} 
