@@ -134,6 +134,9 @@ def search_product(request):
     if request.method == "POST":
         re = request.POST
         name = re['search']
+        if name == '':  # Nếu không nhập tên sản phẩm
+            messages.error(request, "Vui lòng nhập tên sản phẩm")
+            return render(request, "search_product.html", locals())
         
         with cf.ThreadPoolExecutor(max_workers=4) as t_executor:
             chotot_thread = t_executor.submit(chotot, name)
@@ -223,7 +226,7 @@ def search_product(request):
         dictobj['object'] = data
 
         history = History.objects.create(user=request.user, product=dictobj)
-        # messages.success(request, "History Saved")
+        messages.success(request, "History Saved")
 
     return render(request, "search_product.html", locals())
 

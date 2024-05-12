@@ -7,3 +7,6 @@ regex
 webdriver-manager==4.0.1
 numpy
 psycopg2
+urllib3
+wsproto
+lxml
