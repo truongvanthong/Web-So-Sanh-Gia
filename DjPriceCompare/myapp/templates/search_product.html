@@ -115,42 +115,43 @@
             <div class="row">
 
               {% for i in data %}
-
-              <div class="col-md-2 {% if forloop.counter > 1 %}col-half-offset{% endif %}">
-                <img src="{{i.logo}}" style="width:100%;height:40px;"/>
-                <div class="card-box-a box">
-                  <div class="img-box-a {% if forloop.counter == 1 %} card {% endif %}">
-                    {% if forloop.counter == 1 %}
-                      <div class="ribbon">
-                        <span>lowest!</span>
-                      </div>
-                    {% endif %}
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal-{{forloop.counter}}" style="width:100%">
-                      <img src="{{i.image}}" alt="" class="img-thumbnail" style="width:100%;height:180px;">
-                    </button>
-                  </div>
-                </div>
-                <div class="card">
-                    <div class="content">
-                      <div class="card-header d-flex flex-column" style="height:200px">
-                        <!-- <h6 class="card-title line-clamp-1"> -->
-                        <h6 class="card-title">
-                          <a href="">
-                            {{i.name}}
-                          </a>
-                        </h6>
-                        <div class="price-box mb-3">
-                            <span class="price" >Price | {{i.price}}</span>
-                        </div>
-                        <a href="{{i.link}}" class="mt-auto" target="_blank">
-                          <button class="price-box btn btn-primary">Book Now</button>
-                        </a>
-                        
-                        
+                {% if i.name != "0" %}
+                  <div class="col-md-2 {% if forloop.counter > 1 %}col-half-offset{% endif %}">
+                    <img src="{{i.logo}}" style="width:100%;height:40px;"/>
+                    <div class="card-box-a box">
+                      <div class="img-box-a {% if i.check_flag %} card {% endif %}">
+                        {% if i.check_flag %}
+                          <div class="ribbon">
+                            <span>Best Price!</span>
+                          </div>              
+                        {% endif %}      
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal-{{forloop.counter}}" style="width:100%">
+                          <img src="{{i.image}}" alt="" class="img-thumbnail" style="width:100%;height:180px;">
+                        </button>
                       </div>
                     </div>
+                    <div class="card">
+                        <div class="content">
+                          <div class="card-header d-flex flex-column" style="height:200px">
+                            <!-- <h6 class="card-title line-clamp-1"> -->
+                            <h6 class="card-title">
+                              <a href="">
+                                {{i.name}}
+                              </a>
+                            </h6>
+                            <div class="price-box mb-3">
+                                <span class="price" >Price | {{i.price}}</span>
+                            </div>
+                            <a href="{{i.link}}" class="mt-auto" target="_blank">
+                              <button class="price-box btn btn-primary">Book Now</button>
+                            </a>
+                            
+                            
+                          </div>
+                        </div>
+                      </div>
                   </div>
-              </div>
+                {% endif %} 
               {% endfor %}
 
               

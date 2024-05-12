@@ -6,29 +6,29 @@ from .models import *
 from .utils import *
 from django.conf import settings
 from operator import itemgetter
-
+import concurrent.futures as cf
 
 # NOTE:
-    # + locals() là một hàm trong Python, nó trả về một dictionary chứa tất cả các biến cục bộ hiện có
+# + locals() là một hàm trong Python, nó trả về một dictionary chứa tất cả các biến cục bộ hiện có
 
 
 # Create your views here.
 def home(request):
     '''
     Hàm home: trang chủ của website
-    '''    
+    '''
     return render(request, "home.html", locals())
 
 def about(request):
     '''
     Hàm about: trang giới thiệu của website
-    '''    
+    '''
     return render(request, "about.html", locals())
 
 def contact(request):
     '''
     Hàm contact: trang liên hệ của website
-    '''    
+    '''
     return render(request, "contact.html", locals())
 
 def register(request):
@@ -38,12 +38,30 @@ def register(request):
     if request.method == "POST":
         re = request.POST
         rf = request.FILES
-        user = User.objects.create_user(username=re['username'], first_name=re['first_name'], last_name=re['last_name'], password=re['password'])
-        register = Register.objects.create(user=user, address=re['address'], mobile=re['mobile'], image=rf['image'])
+
+        # Kiểm tra xem email đã tồn tại hay chưa
+        if User.objects.filter(username=re['username']).exists():
+            messages.error(
+                request, f"Email '{re['username']}' đã tồn tại. Vui lòng nhập email khác.")
+            return render(request, "signup.html", locals())
+
+        # Kiểm tra rỗng các trường thông tin
+        try:
+            if not re['username'] or not re['first_name'] or not re['last_name'] or not re['password'] or not re['address'] or not re['mobile'] or not rf['image']:
+                messages.error(request, "Vui lòng điền đầy đủ thông tin")
+                return render(request, "signup.html", locals())
+        except:
+            messages.error(request, "Vui lòng điền đầy đủ thông tin")
+            return render(request, "signup.html", locals())
+
+        # Nếu email chưa tồn tại, tạo user và register
+        user = User.objects.create_user(
+            username=re['username'], first_name=re['first_name'], last_name=re['last_name'], password=re['password'])
+        register = Register.objects.create(
+            user=user, address=re['address'], mobile=re['mobile'], image=rf['image'])
         messages.success(request, "Registration Successful")
         return redirect('signin')
     return render(request, "signup.html", locals())
-
 
 def update_profile(request):
     if request.method == "POST":
@@ -56,12 +74,13 @@ def update_profile(request):
             data.save()
         except:
             pass
-        user = User.objects.filter(id=request.user.id).update(username=re['username'], first_name=re['first_name'], last_name=re['last_name'])
-        register = Register.objects.filter(user=request.user).update(address=re['address'], mobile=re['mobile'])
+        user = User.objects.filter(id=request.user.id).update(
+            username=re['username'], first_name=re['first_name'], last_name=re['last_name'])
+        register = Register.objects.filter(user=request.user).update(
+            address=re['address'], mobile=re['mobile'])
         messages.success(request, "Updation Successful")
         return redirect('update_profile')
     return render(request, "update_profile.html", locals())
-
 
 def signin(request):
     if request.method == "POST":
@@ -71,9 +90,12 @@ def signin(request):
             login(request, user)
             messages.success(request, "Logged in successful")
             return redirect('home')
+        else:
+            messages.error(
+                request, "Thông tin không hợp lệ. Vui lòng thử lại.")
+
     return render(request, "signin.html", locals())
 
-    
 def admin_signin(request):
     if request.method == "POST":
         re = request.POST
@@ -84,11 +106,11 @@ def admin_signin(request):
             return redirect('home')
     return render(request, "admin_signin.html", locals())
 
-
 def change_password(request):
     if request.method == "POST":
         re = request.POST
-        user = authenticate(username=request.user.username, password=re['old-password'])
+        user = authenticate(username=request.user.username,
+                            password=re['old-password'])
         if user:
             if re['new-password'] == re['confirm-password']:
                 user.set_password(re['confirm-password'])
@@ -101,124 +123,112 @@ def change_password(request):
             messages.success(request, "Wrong password")
     return render(request, "change_password.html", locals())
 
-
 def logout_user(request):
     logout(request)
     messages.success(request, "Logout Successfully")
     return redirect('home')
 
-
 def search_product(request):
     product = []
-    dictobj = {'object':[]}
+    dictobj = {'object': []}
     if request.method == "POST":
         re = request.POST
         name = re['search']
         
-        # *********************Crawl data từ Chợ Tốt******************************************
-        chotot_products = chotot(name)  # Lấy danh sách sản phẩm (list of dictionaries)
-         # Xử lý dữ liệu Chợ Tốt
-        for product in chotot_products:
-            dictobj["object"].append({
-                'logo':'/static/assets/' + 'img/' + 'chotot-logo.png', 
-                'price':convert(product["price"]), 
-                'name':product["name"][:50], 
-                'link':product["link"], 
-                'image':product["image"]
-            })    
+        with cf.ThreadPoolExecutor(max_workers=4) as t_executor:
+            chotot_thread = t_executor.submit(chotot, name)
+            dienmayxanh_thread = t_executor.submit(dienmayxanh, name)   
+            sendo_thread = t_executor.submit(sendo, name)
+            dienmaycholon_thread = t_executor.submit(dienmaycholon, name)
+            amazon_thread = t_executor.submit(amazon, name)
+            
+            chotot_price, chotot_name, chotot_image, chotot_link = chotot_thread.result()
+            dienmayxanh_price, dienmayxanh_name, dienmayxanh_image, dienmayxanh_link = dienmayxanh_thread.result()
+            sendo_price, sendo_name, sendo_image, sendo_link = sendo_thread.result()
+            dienmaycholon_price, dienmaycholon_name, dienmaycholon_image, dienmaycholon_link = dienmaycholon_thread.result()
+            amazon_price, amazon_name, amazon_image, amazon_link = amazon_thread.result()
+        
+        # *********************Crawl data từ Chợ Tốt******************************************  
+        
+                 # Xử lý dữ liệu Chợ Tốt
+        dictobj["object"].append({'logo': '/static/assets/' + 'img/' + 'chotot-logo.png',       
+                                    'price': convert(chotot_price),
+                                    'name': chotot_name,
+                                    'link': chotot_link,
+                                    'image': chotot_image
+                                    })
+
         # *************************************************************************************
-            
-        #Sendo
-        # sendo_products = sendo(name)  # Lấy danh sách sản phẩm (list of dictionaries)
-        #  # Xử lý dữ liệu Chợ Tốt
-        # for product in sendo_products:
-        #     dictobj["object"].append({
-        #         'logo':'/static/assets/' + 'img/' + 'sendo-logo.png', 
-        #         'price':convert(product["price"]), 
-        #         'name':product["name"], 
-        #         'link':product["link"], 
-        #         'image':product["image"]
-        #     })    
-        #***
         
-        # # dienmaycholon
-        # dienmaycholon_products = dienmaycholon(name)  # Lấy danh sách sản phẩm (list of dictionaries)
-        #  # Xử lý dữ liệu Chợ Tốt
-        # for product in dienmaycholon_products:
-        #     dictobj["object"].append({
-        #         'logo':'/static/assets/' + 'img/' + 'dienmaycholon-logo.png', 
-        #         'price':convert(product["price"]), 
-        #         'name':product["name"], 
-        #         'link':product["link"], 
-        #         'image':product["image"]
-        #     })    
-            
-        # dienmayxanh
-        # dienmayxanh_products = dienmayxanh(name)
-        # for product in dienmayxanh_products:
-        #     dictobj["object"].append({
-        #         'logo':'/static/assets/' + 'img/' + 'dienmayxanh-logo.png', 
-        #         'price':convert(product["price"]), 
-        #         'name':product["name"], 
-        #         'link':product["link"], 
-        #         'image':product["image"]
-        #     })
-        
-        
+        # ========================================================================================
+
         # ===================================Điện máy xanh=======================================
-        dienmayxanh_price, dienmayxanh_name, dienmayxanh_image, dienmayxanh_link=dienmayxanh(name)   
-        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'dienmayxanh-logo.png', 
-                                  'price':convert(dienmayxanh_price), 
-                                  'name':dienmayxanh_name, 
-                                  'link':dienmayxanh_link, 
-                                  'image':dienmayxanh_image})
+        # dienmayxanh_price, dienmayxanh_name, dienmayxanh_image, dienmayxanh_link = dienmayxanh(name)
+        dictobj["object"].append({'logo': '/static/assets/' + 'img/' + 'dienmayxanh-logo.png',
+                                  'price': convert(dienmayxanh_price),
+                                  'name': dienmayxanh_name,
+                                  'link': dienmayxanh_link,
+                                  'image': dienmayxanh_image
+                                  })
         # ========================================================================================
-        
-        
-        # ===================================Sendo=================================================  
-        sendo_price, sendo_name, sendo_image, sendo_link=sendo(name)
-        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'sendo-logo.png', 
-                                  'price':convert(sendo_price), 
-                                  'name':sendo_name, 
-                                  'link':sendo_link, 
-                                  'image':sendo_image})
-        # ========================================================================================
-        
-        
+
+        # ===================================Sendo=================================================
+        # sendo_price, sendo_name, sendo_image, sendo_link = sendo(name)
+        dictobj["object"].append({'logo': '/static/assets/' + 'img/' + 'sendo-logo.png',
+                                  'price': convert(sendo_price),
+                                  'name': sendo_name,
+                                  'link': sendo_link,
+                                  'image': sendo_image
+                                  })
+        # =========================================================================================
+
         # ===================================Điện máy chợ lớn=============================================
-        dienmaycholon_price, dienmaycholon_name, dienmaycholon_image, dienmaycholon_link=dienmaycholon(name)
-        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'dienmaycholon-logo.png', 
-                                  'price':convert(dienmaycholon_price), 
-                                  'name':dienmaycholon_name, 
-                                  'link':dienmaycholon_link, 
-                                  'image':dienmaycholon_image})
-        # ========================================================================================    
+                # dienmaycholon_price, dienmaycholon_name, dienmaycholon_image, dienmaycholon_link = dienmaycholon(name)
+        dictobj["object"].append({'logo': '/static/assets/' + 'img/' + 'dienmaycholon-logo.png',
+                                  'price': convert(dienmaycholon_price),
+                                  'name': dienmaycholon_name,
+                                  'link': dienmaycholon_link,
+                                  'image': dienmaycholon_image
+                                  })
+        # ===============================================================================================
+
+        # ===================================Amazon=================================================
+        # amazon_price, amazon_name, amazon_image, amazon_link=amazon(name)
+        dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'amazon-logo.png',
+                                  'price':convert(amazon_price)*305,
+                                  'name':amazon_name,
+                                  'link':amazon_link,
+                                  'image':amazon_image
+                                  })
+        # ========================================================================================
+
+        data = dictobj['object']
+        # Nếu giá trị nào bằng 0 thì xóa nó
+        data = [i for i in data if i['price'] != '0']
     
         
-        # ===================================Amazon=================================================     
-        # amazon_price, amazon_name, amazon_image, amazon_link=amazon(name)
-        # dictobj["object"].append({'logo':'/static/assets/' + 'img/' + 'amazon-logo.png', 
-        #                           'price':convert(amazon_price)*305, 
-        #                           'name':amazon_name, 
-        #                           'link':amazon_link, 
-        #                           'image':amazon_image})
-        # ========================================================================================
-        
-        data = dictobj['object']
         data = sorted(data, key=itemgetter('price'))
-        # Chuyển đổi tiền tệ từ INR sang VND
+        check_flag = False
+
+        
+        # Chuyển đổi tiền tệ từ sang VND
         for i in range(len(data)):
+            if not check_flag:
+                check_flag = (data[i]['name'] != '0') and (not check_flag)
+                
+                data[i]['check_flag'] = check_flag
+            else:
+                data[i]['check_flag'] = not check_flag
+                
             data[i]['price'] = format_price(data[i]['price'])
-            
-        # Nếu giá trị nào bằng 0 thì xóa nó
-        data = [i for i in data if i['price'] != 0]
+
         dictobj['object'] = data
 
-          
         history = History.objects.create(user=request.user, product=dictobj)
         # messages.success(request, "History Saved")
-        
+
     return render(request, "search_product.html", locals())
+
 
 def my_history(request):
     history = History.objects.filter(user=request.user)
@@ -226,10 +236,12 @@ def my_history(request):
         history = History.objects.filter()
     return render(request, "my_history.html", locals())
 
+
 def all_user(request):
     data = Register.objects.filter()
     return render(request, "all_user.html", locals())
 
+# Hàm xem chi tiết lịch sử tìm kiếm
 def history_detail(request, pid):
     history = History.objects.get(id=pid)
     product = (history.product).replace("'", '"')
@@ -242,14 +254,14 @@ def history_detail(request, pid):
         pass
     return render(request, "history_detail.html", locals())
 
-
+# Hàm xóa user của admin
 def delete_user(request, pid):
     user = User.objects.get(id=pid)
     user.delete()
     messages.success(request, "User Deleted")
     return redirect('all_user')
 
-
+# Hàm xóa lịch sử tìm kiếm
 def delete_history(request, pid):
     data = History.objects.get(id=pid)
     data.delete()
