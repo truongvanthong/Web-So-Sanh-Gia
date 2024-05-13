@@ -1,63 +1,120 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block body %}
 
+{% block body %}
 <section class="section-services section-t8">
     <div class="container">
-    <h3>User Registration</h3><hr>
-    <div class="form">
-      <form class="form-a" action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="row">
-          <div class="col-md-6 mb-2">
-            <div class="form-group">
-              <label class="pb-2" for="Type">First name</label>
-              <input type="text" class="form-control form-control-a" placeholder="First Name" name="first_name">
-            </div>
-          </div>
-          <div class="col-md-6 mb-2">
-            <div class="form-group">
-              <label class="pb-2" for="Type">Last name</label>
-              <input type="text" class="form-control form-control-a" placeholder="Last Name" name="last_name">
-            </div>
-          </div>
-          <div class="col-md-6 mb-2">
-            <div class="form-group">
-              <label class="pb-2" for="Type">Email</label>
-              <input type="email" class="form-control form-control-a" placeholder="Email" name="username">
-            </div>
-          </div>
-          <div class="col-md-6 mb-2">
-            <div class="form-group">
-              <label class="pb-2" for="Type">Password</label>
-              <input type="password" class="form-control form-control-a" placeholder="Password" name="password">
-            </div>
-          </div>
-          <div class="col-md-6 mb-2">
-            <div class="form-group">
-                <label class="pb-2" for="Type">Image</label>
-                <input type="file" class="form-control form-control-a" name="image">
-            </div>
-          </div>
-          <div class="col-md-6 mb-2">
-            <div class="form-group">
-                <label class="pb-2" for="Type">Mobile</label>
-                <input type="number" class="form-control form-control-a" name="mobile" placeholder="Mobile">
-            </div>
-          </div>
-          <div class="col-md-12 mb-2">
-            <div class="form-group mt-3">
-              <label class="pb-2" for="bedrooms">Address</label>
-              <textarea class="form-control form-control-a" name="address" placeholder="Adress in detail"></textarea>
-            </div>
-          </div>
-          
-          <div class="col-md-12">
-            <button type="submit" class="btn btn-b">Register</button>
-          </div>
+        <h3>Đăng Ký Người Dùng</h3>
+        <hr>
+        
+        <div class="form">
+            <form class="form-a" action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+
+                    <div class="form-group">
+                      <label class="pb-2" for="Type">Image</label>
+                      <input type="file" class="form-control form-control-a" name="image">
+                    </div>
+                    <!-- <div>
+                    <div class="avatar-wrapper">
+                      <img type="file" class="profile-pic" id="image" name="image" accept="image/*" src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fcrowd-literature.eu%2Fspeakers%2Fno-avatar%2F&psig=AOvVaw1v-hg-6bRsJ2FFU3uk1FTz&ust=1715704452659000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCNDUqaWHi4YDFQAAAAAdAAAAABAE"
+                      required />
+                      <div class="upload-button">
+                        <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+                      </div>
+                      <input class="file-upload" type="file" accept="image/*"/>
+                    </div>
+                    
+                  </div> -->
+ 
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="first_name">First name:</label>
+                            <input type="text" class="form-control" id="first_name" placeholder="First Name"
+                                name="first_name" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="last_name">Last name:</label>
+                            <input type="text" class="form-control" id="last_name" placeholder="Last Name"
+                                name="last_name" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="username">Email:</label>
+                            <input type="email" class="form-control" id="username" placeholder="Email" name="username"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="mobile">Mobile:</label>
+                            <input type="number" class="form-control" id="mobile" name="mobile" placeholder="Mobile"
+                                required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" class="form-control" id="password" placeholder="Password"
+                                name="password" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password:</label>
+                            <input type="password" class="form-control" id="confirm_password"
+                                placeholder="Confirm Password" name="confirm_password" required>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-2">
+                        <div class="form-group">
+                            <label for="address">Address:</label>
+                            <textarea class="form-control" id="address" name="address" placeholder="Address in detail"
+                                required></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<!-- <script>
+  $(document).ready(function() {
+	
+  var readURL = function(input) {
+      if (input.files && input.files[0]) {
+          // var reader = new FileReader();
+
+          // reader.onload = function (e) {
+          //     $('.profile-pic').attr('src', e.target.result);
+          // }
+  
+          // reader.readAsDataURL(input.files[0]);
+              $('.profile-pic').attr('src', URL.createObjectURL(input.files[0]));
+      }
+  }
+ 
+  $(".file-upload").on('change', function(){
+      readURL(this);
+  });
+  
+  $(".upload-button").on('click', function() {
+     $(".file-upload").click();
+  });
+});
+</script> -->
+
 {% include 'footer.html' %}
-{% endblock  %} 
+{% endblock %}

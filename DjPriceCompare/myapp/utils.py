@@ -17,6 +17,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import TimeoutException
 import numpy as np
 
+from fuzzywuzzy import fuzz
+
+from deep_translator import GoogleTranslator
+from selenium.common.exceptions import NoSuchElementException
+
+
 def check_val_float(val):
     try:
         float(val)
@@ -26,8 +32,6 @@ def check_val_float(val):
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'}
-
-from fuzzywuzzy import fuzz
 
 
 # Thiết lập options cho Chrome headless
@@ -44,11 +48,10 @@ service = Service(r"myapp/chromedriver-win64/chromedriver.exe")
 sendo_driver = webdriver.Chrome(options=chrome_options, service=service)
 dienmaycholon_driver = webdriver.Chrome(options=chrome_options, service=service)
 chotot_driver = webdriver.Chrome(options=chrome_options, service=service)
-dienmayxanh_driver = webdriver.Chrome(options=chrome_options, service=service)
-# ****************************************Format**********************************************
+# dienmayxanh_driver = webdriver.Chrome(options=chrome_options, service=service)
 
-from deep_translator import GoogleTranslator
-from selenium.common.exceptions import NoSuchElementException
+
+# ****************************************Format**********************************************
 
 def translator(text):
     """
@@ -210,7 +213,8 @@ def dienmayxanh(name):
         return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
 # ******************************************************************************************************
 
-# ****************************************Điện Máy Xanh*****************************************
+
+# ****************************************Điện Máy Xanh Backup*****************************************
 # def dienmayxanhx(name):
     try:
         name2 = name.replace(" ", "+")
@@ -299,6 +303,7 @@ def dienmayxanh(name):
         return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
 # ******************************************************************************************************
 
+
 #  ****************************************Amazon**********************************************
 def amazon(name):
     try:
@@ -360,74 +365,6 @@ def amazon(name):
     return amazon_price, amazon_name[0:50], amazon_image, amazon_link
 # ====================================================================================
 
-# # *************************Chợ Tốt*************************
-# def chotot(name):
-#     try:
-#         # Chuẩn bị URL
-#         name2 = name.replace(" ", "-")
-#         chotot_url = f'https://www.chotot.com/mua-ban?q={name2}'
-
-#         chotot_driver.get(chotot_url) 
-#         # driver.implicitly_wait(10)  # Chờ đợi element xuất hiện 
-#         print("---------------------------------")
-#         print("\nSearching in Chợ Tốt...")
-#         soup = BeautifulSoup(chotot_driver.page_source, 'lxml')
-        
-#         # Tìm kiếm element
-#         element_name = soup.select("h3.commonStyle_adTitle__g520j")
-
-#         element_price = soup.select("p.AdBody_adPriceNormal___OYFU")
-        
-#         element_image = soup.select("picture.webpimg-container img")
-
-
-#         # Lấy thông tin sản phẩm   
-               
-#         # Giá
-#         chotot_price = [ele.get_text().strip(' đ').strip().replace(".", "") for ele in element_price]
-#         chotot_price_float = [float(ele) for ele in chotot_price]
-#         thresh = np.quantile(chotot_price_float, q = 0.1)
-#         # remome thresh 
-#         chotot_price = [ele for ele, price_float  in zip(chotot_price, chotot_price_float) if price_float>=thresh]    
-        
-#         # Name
-#         # ' '.join(element_names[0].get_text().replace("\n", "").split())
-#         chotot_name = [' '.join(ele.get_text().replace("\n", "").split()) for ele, price_float in zip(element_name, chotot_price_float) if price_float>=thresh]
-                
-#         # Image
-#         # element_image[0].attrs['src']
-#         chotot_image = [ele.attrs['src'] for ele, price_float in zip(element_image, chotot_price_float) if price_float>=thresh]
-        
-#         # Lọc giá bé nhất
-#         chotot_price_float = [ele for ele in chotot_price_float if ele>=thresh]
-#         # min(enumerate(a), key=lambda x: x[1])[0]
-#         index_min = min(enumerate(chotot_price_float), key=lambda x: x[1])[0]
-        
-#         chotot_name = chotot_name[index_min]
-#         chotot_price = chotot_price[index_min]
-#         chotot_image = chotot_image[index_min]
-        
-#         print("Chợ Tốt:")
-#         print("Tên Sản Phẩm:", chotot_name)
-#         print("Giá:", chotot_price)
-#         print("Link Ảnh:", chotot_image)
-#         print("Link:", chotot_url)
-#         print("---------------------------------")
-
-#         return chotot_price, chotot_name[0:50], chotot_image, chotot_url
-
-#     except Exception as e:
-#         print(f"Lỗi: {e}")
-#         chotot_price = '0'
-#         chotot_name = '0'
-#         chotot_image = '0'
-#         chotot_url = '0'
-#         return chotot_price, chotot_name, chotot_image, chotot_url
-    
-# # ******************************************
-
-
-# *************************Chợ Tốt*************************
 # *************************Chợ Tốt*************************
 def chotot(name):
     try:
@@ -532,7 +469,7 @@ def chotot(name):
     
 # ******************************************
     
-# ******************************************
+# *************************Sendo*************************
 
 def sendo(name):
     try:
@@ -749,7 +686,7 @@ def croma(name):
         CO.add_argument('--ignore-certificate-errors')
         CO.add_argument('--start-maximized')
         # print("Driver path", str(settings.BASE_DIR)+'\chromedriver.exe')
-        wd = webdriver.Chrome('chromedriver.exe', options=CO)
+        wd = webdriver.Chrome(r'myapp/chromedriver-win64/chromedriver.exe', options=CO)
 
         wd.get(source)
         wd.implicitly_wait(wait_imp)
