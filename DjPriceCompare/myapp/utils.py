@@ -37,7 +37,10 @@ chrome_options.add_argument("--disable-gpu")
 
 
 # Khởi tạo driver
-service = Service(ChromeDriverManager().install())
+# service = Service(ChromeDriverManager().install())
+
+service = Service(r"myapp/chromedriver-win64/chromedriver.exe")
+
 sendo_driver = webdriver.Chrome(options=chrome_options, service=service)
 dienmaycholon_driver = webdriver.Chrome(options=chrome_options, service=service)
 chotot_driver = webdriver.Chrome(options=chrome_options, service=service)
