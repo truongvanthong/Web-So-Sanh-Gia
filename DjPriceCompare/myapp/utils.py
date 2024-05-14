@@ -123,7 +123,7 @@ def dienmayxanh(name):
             similarity_score = fuzz.ratio(name.upper(), dienmayxanh_name)
             # print(f"Similarity Score: {similarity_score}")
                 
-            if similarity_score >= 10:
+            if similarity_score >= 15:
                 dienmayxanh_name = soup.select('a.main-contain>h3')[i].getText().strip()
                 # print(f"Name: {dienmayxanh_name}")
 
@@ -328,7 +328,7 @@ def amazon(name):
             # Tính toán độ tương đồng giữa tên sản phẩm và tên sản phẩm tìm kiếm
             similarity_score = fuzz.ratio(name, amazon_name)
             # print(f"Similarity Score: {similarity_score}")
-            if similarity_score >= 10:
+            if similarity_score >= 15:
                 amazon_name = soup.select(
                     '.a-color-base.a-text-normal')[i].getText().strip()
                 amazon_images = soup.select(
@@ -400,6 +400,12 @@ def chotot(name):
                     name_element = name_element.get_text()
                 else:
                     name_element = '0'
+                
+                # Tính toán độ tương đồng giữa tên sản phẩm và tên sản phẩm tìm kiếm
+                similarity_score = fuzz.ratio(name, name_element)
+                # print(f"Similarity Score: {similarity_score}")
+                if similarity_score < 15:
+                    continue
                     
                 price_element = ele.select_one("p.AdBody_adPriceNormal___OYFU")
                 if price_element is not None:
@@ -506,6 +512,12 @@ def sendo(name):
         for i in range(num_elements):
             # Lấy tên sản phẩm
             sendo_name = name_elements[i].text
+            
+            # Tính toán độ tương đồng giữa tên sản phẩm và tên sản phẩm tìm kiếm        
+            similarity_score = fuzz.ratio(name, sendo_name)
+            # print(f"Similarity Score: {similarity_score}")
+            if similarity_score < 15:
+                continue            
 
             # Lấy giá sản phẩm
             sendo_price = price_elements[i].text.strip('đ')
@@ -603,6 +615,12 @@ def dienmaycholon(name):
                     name_element = ' '.join(name_element.get_text().replace("\n", "").split())
                 else:
                     name_element = '0'
+                    
+                # Tính toán độ tương đồng giữa tên sản phẩm và tên sản phẩm tìm kiếm
+                similarity_score = fuzz.ratio(name, name_element)
+                if similarity_score < 15: # Nếu độ tương đồng nhỏ hơn 30 thì bỏ qua
+                    continue
+                # print(f"Similarity Score: {similarity_score}")
                     
                 price_element = ele.select_one("div.price_sale")
                 if price_element is not None:

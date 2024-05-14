@@ -317,7 +317,7 @@ def search_product(request):
         dictobj['object'] = data
 
         history = History.objects.create(user=request.user, product=dictobj)
-        messages.success(request, "History Saved")
+        # messages.success(request, "History Saved")
 
     return render(request, "search_product.html", locals())
 
