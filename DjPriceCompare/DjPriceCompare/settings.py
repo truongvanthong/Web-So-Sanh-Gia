@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'DjPriceCompare.wsgi.application'
 #     }
 # }
 
-# # PostgreSQL
+# PostgreSQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

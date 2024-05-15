@@ -55,7 +55,12 @@ td{
               {% for i in data %}
               <tr>
                 <td>{{i.id}}</td>
+                <!-- Nếu không có ảnh thì cho ảnh mặc định -->
+                {% if not i.image %}
+                <td><img src="{% static 'images/aboutt-2.jpg' %}" class="img-thumbnail" style="width:100px;height:100px"/></td>
+                {% else %}
                 <td><img src="{{i.image.url}}" class="img-thumbnail" style="width:100px;height:100px"/></td>
+                {% endif %}
                 <td>{{i.user.username}}</td>
                 <td>{{i.user.first_name}} {{i.user.last_name}}</td>
                 <td>{{i.mobile}}</td>

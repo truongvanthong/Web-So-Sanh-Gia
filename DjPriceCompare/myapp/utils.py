@@ -41,9 +41,9 @@ chrome_options.add_argument("--disable-gpu")
 
 
 # Khởi tạo driver
-# service = Service(ChromeDriverManager().install())
+service = Service(ChromeDriverManager().install())
 
-service = Service(r"myapp/chromedriver-win64/chromedriver.exe")
+# service = Service(r"myapp/chromedriver-win64/chromedriver.exe")
 
 sendo_driver = webdriver.Chrome(options=chrome_options, service=service)
 dienmaycholon_driver = webdriver.Chrome(options=chrome_options, service=service)
@@ -60,6 +60,17 @@ def translator(text):
     """
     
     type_trans = GoogleTranslator(source='auto', target='en')
+    trans = type_trans.translate(text)
+    return trans
+
+# Trans to Vietnamese
+
+def translator_vn(text):
+    """
+    Dịch văn bản từ ngôn ngữ hiện tại sang tiếng Việt.
+    # Đối với các trang quốc tế: Amazon, ...
+    """
+    type_trans = GoogleTranslator(source='auto', target='vi')
     trans = type_trans.translate(text)
     return trans
 
@@ -106,6 +117,7 @@ def format_price(price):
 # ****************************************Điện Máy Xanh*****************************************
 def dienmayxanh(name):
     try:
+        name = translator_vn(name)
         name2 = name.replace(" ", "+")
         dienmayxanh_url = f'https://www.dienmayxanh.com/tim-kiem?key={name2}'
 
@@ -213,97 +225,6 @@ def dienmayxanh(name):
         return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
 # ******************************************************************************************************
 
-
-# ****************************************Điện Máy Xanh Backup*****************************************
-# def dienmayxanhx(name):
-    try:
-        name2 = name.replace(" ", "+")
-        dienmayxanh_url = f'https://www.dienmayxanh.com/tim-kiem?key={name2}'
-
-        res = requests.get(dienmayxanh_url, headers=headers)
-        print("\nSearching in Điện Máy Xanh...")
-        soup = BeautifulSoup(res.text, 'html.parser')
-
-        dienmayxanh_page = soup.select('a.main-contain')
-        dienmayxanh_page_length = int(len(dienmayxanh_page))        
-        
-        matching_products = []  # List to store matching products
-        for i in range(0, dienmayxanh_page_length):
-            dienmayxanh_name = soup.select('a.main-contain>h3')[i].getText().strip().upper()
-   
-            similarity_score = fuzz.ratio(name.upper(), dienmayxanh_name)
-            # print(f"Similarity Score: {similarity_score}")
-                
-            if similarity_score >= 10:
-                dienmayxanh_name = soup.select('a.main-contain>h3')[i].getText().strip()
-                # print(f"Name: {dienmayxanh_name}")
-
-                dienmayxanh_images = soup.select('a.main-contain')
-                if dienmayxanh_images:
-                    if dienmayxanh_images[i].find('img').get('src'):
-                        dienmayxanh_image = dienmayxanh_images[i].find('img')['src']
-                    elif dienmayxanh_images[i].find_all('img', class_='lazyload'):
-                        dienmayxanh_image = dienmayxanh_images[i].find_all('img', class_='lazyload')[0]['data-src']
-                    elif dienmayxanh_images[i].find_all('img', class_='lazyloaded'):
-                        dienmayxanh_image = dienmayxanh_images[i].find_all('img', class_='lazyloaded')[0]['data-src']  
-                    else:
-                        dienmayxanh_image = '0'
-                else:
-                    dienmayxanh_image = '0'
-                
-                try:
-                    # Robust empty price check
-                    if not soup.select('a.main-contain>strong.price')[i].getText().strip() or soup.select('a.main-contain>strong.price')[i].getText().strip() == ' ':
-                        dienmayxanh_price = '0'
-                    else:
-                        dienmayxanh_price = soup.select('a.main-contain>strong.price')[i].getText().strip().upper()
-                        dienmayxanh_price = dienmayxanh_price.strip('₫')
-                        dienmayxanh_price = re.sub("[^0-9]", "", dienmayxanh_price)
-                except:
-                    continue        
-
-                product = {
-                    "name": dienmayxanh_name,
-                    "price": dienmayxanh_price,
-                    "image": dienmayxanh_image,
-                    "link": dienmayxanh_url
-                }
-
-                # Kiểm tra xem sản phẩm nào price=0 thì không lưu vào matching_products và xoá product đó
-                if product["price"] == '0':
-                    del product
-                else:
-                    matching_products.append(product)
-          
-        # Nếu không có sản phẩm nào thì trả về None
-        if not matching_products:
-            return None  
-      
-        dienmayxanh_price = matching_products[0]["price"]
-        dienmayxanh_name= matching_products[0]["name"]
-        dienmayxanh_image= matching_products[0]["image"]
-        dienmayxanh_url= matching_products[0]["link"]
-        print("Điện Máy Xanh:")
-        print("Tên Sản Phẩm:", dienmayxanh_name)
-        print("Giá:", dienmayxanh_price)
-        print("Link Ảnh:", dienmayxanh_image)
-        print("Link:", dienmayxanh_url)
-        print("---------------------------------")
-    
-        return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
-
-    except Exception as e:
-        print(f"Lỗi: {e}")
-        print("Điện Máy Xanh: No product found!")
-        print("---------------------------------")
-        dienmayxanh_price = '0'
-        dienmayxanh_name = '0'
-        dienmayxanh_image = '0'
-        dienmayxanh_url = '0'
-        return dienmayxanh_price, dienmayxanh_name[0:50], dienmayxanh_image, dienmayxanh_url
-# ******************************************************************************************************
-
-
 #  ****************************************Amazon**********************************************
 def amazon(name):
     try:
@@ -313,7 +234,7 @@ def amazon(name):
         name2 = name.replace(" ", "+")
         amazon = f'https://www.amazon.in/{name1}/s?k={name2}'
         amazon_link = amazon
-        print(amazon_link)
+        # print(amazon_link)
         res = requests.get(
             f'https://www.amazon.in/{name1}/s?k={name2}', headers=headers)
         print("\nSearching in amazon...")
@@ -369,6 +290,8 @@ def amazon(name):
 def chotot(name):
     try:
         # Chuẩn bị URL
+        name = translator_vn(name)
+        
         name2 = name.replace(" ", "-")
         chotot_url = f'https://www.chotot.com/mua-ban?q={name2}'
 
@@ -480,11 +403,12 @@ def chotot(name):
 def sendo(name):
     try:
         # Chuẩn bị URL
+        name = translator_vn(name)
         name2 = name.replace(" ", "+")
         sendo_url = f"https://www.sendo.vn/tim-kiem?q={name2}"
         print("Searching in Sen đỏ...")
         sendo_driver.get(sendo_url)
-        
+        sendo_driver.implicitly_wait(10)  # Chờ đợi element xuất hiện 
         
         # Tìm kiếm danh sách element
         name_elements = WebDriverWait(sendo_driver, 10).until(
@@ -579,6 +503,7 @@ def sendo(name):
 def dienmaycholon(name):
     try:
         # Chuẩn bị URL
+        name = translator_vn(name)
         name2 = name.replace(" ", "-")
         dienmaycholon_url = f"https://dienmaycholon.vn/tu-khoa/{name2}"
         # print(dienmaycholon_url)
